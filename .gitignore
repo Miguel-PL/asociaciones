@@ -1,0 +1,29 @@
+# Dependencias
+/vendor/
+/node_modules/
+
+# Archivos de entorno
+.env
+.env.backup
+
+# Archivos generados
+/storage/logs/*.log
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Laravel specific
+/public/build/
+/public/hot
+/public/storage
+/storage/*.key
