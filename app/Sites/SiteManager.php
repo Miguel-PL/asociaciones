@@ -17,6 +17,15 @@ class SiteManager
     /** @var array<string, Site>|null */
     protected ?array $sites = null;
 
+    /**
+     * Ruta desde la que se discovering los sitios cacheados.
+     *
+     * El cache se anota con la ruta para que, si sites.path cambia, se vuelva
+     * a descubrir. Sin esto, resolver el manager antes de cambiar la
+     * configuracion devolveria los sitios de la ruta anterior.
+     */
+    protected ?string $discoveredFrom = null;
+
     protected ?Site $current = null;
 
     public function __construct(protected Application $app) {}
@@ -28,7 +37,14 @@ class SiteManager
      */
     public function all(): array
     {
-        return $this->sites ??= $this->discover();
+        $path = Site::basePath();
+
+        if ($this->sites === null || $this->discoveredFrom !== $path) {
+            $this->sites = $this->discover($path);
+            $this->discoveredFrom = $path;
+        }
+
+        return $this->sites;
     }
 
     /**
@@ -122,14 +138,15 @@ class SiteManager
     public function flush(): void
     {
         $this->sites = null;
+        $this->discoveredFrom = null;
     }
 
     /**
      * @return array<string, Site>
      */
-    protected function discover(): array
+    protected function discover(?string $path = null): array
     {
-        $path = Site::basePath();
+        $path ??= Site::basePath();
         $sites = [];
 
         if (! File::isDirectory($path)) {

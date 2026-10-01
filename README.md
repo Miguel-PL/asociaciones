@@ -70,9 +70,21 @@ En desarrollo, el sitio activo se fija con la variable `SITE` del `.env`, cuyo
 valor debe coincidir con el nombre de la carpeta en `sites/`. En producción se
 resuelve por dominio.
 
-El usuario del panel de administración se crea con `php artisan db:seed`. Sus
-credenciales se pueden ajustar con `ADMIN_EMAIL` y `ADMIN_PASSWORD`.
+Cada sitio tiene su propia cuenta de administración, creada con
+`php artisan db:seed`. El correo sale de `admin_email` en el `site.php` de cada
+sitio y la contraseña se ajusta con `ADMIN_PASSWORD`.
 
 ## Panel de administración
 
-Disponible en `/admin`.
+Cada sitio tiene su propio panel, en `/{slug}/admin`, por ejemplo
+`/caudete-se-mueve/admin` y `/miradas-violetas/admin`. Los paneles se registran
+sola a partir de las carpetas de `sites/`, así que añadir una web nueva da su
+panel automáticamente.
+
+Las cuentas no se comparten: una cuenta solo entra al panel de su asociación y
+el login del otro sitio rechaza sus credenciales. El contenido de cada panel
+está además filtrado por sitio, de modo que una asociación no ve ni puede
+editar lo de la otra.
+
+El código de recursos, páginas y widgets es común a todos los paneles; no se
+duplica nada por sitio.

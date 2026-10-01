@@ -25,6 +25,7 @@ class Site implements Arrayable
         public readonly array $social = [],
         public readonly array $contact = [],
         public readonly array $footer = [],
+        public readonly ?string $adminEmail = null,
         public readonly bool $enabled = true,
     ) {}
 
@@ -53,6 +54,7 @@ class Site implements Arrayable
             social: (array) ($config['social'] ?? []),
             contact: (array) ($config['contact'] ?? []),
             footer: (array) ($config['footer'] ?? []),
+            adminEmail: $config['admin_email'] ?? null,
             enabled: (bool) ($config['enabled'] ?? true),
         );
     }
@@ -179,6 +181,7 @@ class Site implements Arrayable
             'social' => $this->social,
             'contact' => $this->contact,
             'footer' => $this->footer,
+            'admin_email' => $this->adminEmail,
             'enabled' => $this->enabled,
         ];
     }

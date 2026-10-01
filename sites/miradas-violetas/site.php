@@ -6,6 +6,8 @@ return [
 
     'tagline' => 'Red vecinal por la igualdad y la visibilidad',
 
+    'admin_email' => 'miradas@asociaciones.test',
+
     'description' => 'Miradas Violetas es una red vecinal que trabaja por la igualdad, '.
         'la visibilidad y la lucha contra la violencia de género.',
 

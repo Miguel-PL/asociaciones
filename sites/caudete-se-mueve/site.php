@@ -6,6 +6,8 @@ return [
 
     'tagline' => 'La asociación vecinal que mueve Caudete',
 
+    'admin_email' => 'caudete@asociaciones.test',
+
     'description' => 'Caudete Se Mueve es la asociación vecinal de Caudete. '.
         'Trabajamos por el barrio con actividades, propuestas y participación.',
 

@@ -2,27 +2,35 @@
 
 namespace Tests\Feature;
 
-use App\Filament\Middleware\IdentifyPanelSite;
-use App\Http\Middleware\IdentifySite;
+use App\Filament\Auth\Login;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\User;
 use App\Sites\Site;
 use App\Sites\SiteManager;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 /**
- * El panel edita contenido de un solo sitio cada vez. Estos tests comprueban
- * que la sesion del panel no se mixing con la del sitio publico y que el
- * SiteScope filtra correctamente en las pantallas de administracion.
+ * Cada sitio tiene su propio panel en /{slug}/admin y sus propias cuentas.
+ *
+ * Estos tests comprueban lo que mas importa de esa separacion: que una cuenta
+ * de una asociacion no entre, ni siquiera a ver, en el panel de la otra, y que
+ * cada panel solo liste el contenido de su sitio.
  */
 class PanelSiteIsolationTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected User $admin;
+    protected User $caudete;
+
+    protected User $miradas;
+
+    protected User $sinSitio;
 
     protected SiteManager $sites;
 
@@ -32,128 +40,184 @@ class PanelSiteIsolationTest extends TestCase
 
         $this->sites = app(SiteManager::class);
 
-        $this->admin = User::create([
-            'name' => 'Admin',
-            'email' => 'admin@example.test',
+        $this->caudete = $this->usuarioDe('caudete-se-mueve', 'caudete@example.test');
+        $this->miradas = $this->usuarioDe('miradas-violetas', 'miradas@example.test');
+        $this->sinSitio = User::create([
+            'name' => 'Sin sitio',
+            'email' => 'sinsitio@example.test',
             'password' => 'secreto',
         ]);
     }
 
-    protected function activate(string $slug): Site
+    protected function usuarioDe(string $slug, string $email): User
     {
-        $site = Site::fromConfig($slug, ['name' => ucfirst($slug)]);
+        return User::create([
+            'site_id' => $slug,
+            'name' => ucfirst($slug),
+            'email' => $email,
+            'password' => 'secreto',
+        ]);
+    }
 
-        $this->sites->set($site);
+    /**
+     * Crea contenido del sitio indicado como activo, que es lo que usa
+     * SiteScope para completar site_id.
+     */
+    protected function activar(string $slug): void
+    {
+        $this->sites->set(Site::fromConfig($slug, ['name' => ucfirst($slug)]));
+    }
 
-        return $site;
+    /**
+     * Visita una pantalla del panel como esa cuenta, en sesion limpia.
+     *
+     * Cada asociacion entra desde su propio navegador, asi que al pasar de una
+     * cuenta a otra hay que cambiar de sesion. Sin esto, el middleware
+     * AuthenticateSession de Filament cierra la sesion anterior y la segunda
+     * peticion acaba en el login en lugar de en el panel.
+     */
+    protected function verComo(User $usuario, string $url)
+    {
+        Auth::logout();
+
+        $this->flushSession();
+
+        return $this->actingAs($usuario)->get($url);
+    }
+
+    public function test_each_site_has_its_own_panel(): void
+    {
+        $this->verComo($this->caudete, '/caudete-se-mueve/admin')->assertOk();
+        $this->verComo($this->miradas, '/miradas-violetas/admin')->assertOk();
     }
 
     public function test_the_panel_requires_authentication(): void
     {
-        $this->get('/admin/posts')->assertRedirect();
+        $this->get('/caudete-se-mueve/admin')->assertRedirect();
     }
 
-    public function test_the_panel_uses_the_default_site_by_default(): void
+    public function test_a_user_cannot_enter_the_panel_of_another_site(): void
     {
-        config(['sites.default' => 'caudete-se-mueve']);
+        $this->verComo($this->caudete, '/miradas-violetas/admin')->assertForbidden();
 
-        $this->actingAs($this->admin)
-            ->get('/admin/posts')
-            ->assertOk();
+        $this->verComo($this->miradas, '/caudete-se-mueve/admin')->assertForbidden();
     }
 
-    public function test_the_panel_renders_its_resource_pages(): void
+    public function test_a_user_cannot_reach_the_content_screens_of_another_site(): void
     {
-        foreach (['/admin/posts', '/admin/pages', '/admin/categories', '/admin/switch-site'] as $url) {
-            $this->actingAs($this->admin)
-                ->get($url)
-                ->assertOk();
+        // El 403 no debe depender de la pantalla: tampoco las tablas.
+        $this->actingAs($this->caudete)
+            ->get('/miradas-violetas/admin/posts')
+            ->assertForbidden();
+    }
+
+    public function test_a_user_without_a_site_cannot_enter_any_panel(): void
+    {
+        $this->verComo($this->sinSitio, '/caudete-se-mueve/admin')->assertForbidden();
+
+        $this->verComo($this->sinSitio, '/miradas-violetas/admin')->assertForbidden();
+    }
+
+    public function test_a_user_enters_only_its_own_panel(): void
+    {
+        $this->assertTrue($this->caudete->canAccessPanel(Filament::getPanel('caudete-se-mueve')));
+        $this->assertFalse($this->caudete->canAccessPanel(Filament::getPanel('miradas-violetas')));
+        $this->assertFalse($this->sinSitio->canAccessPanel(Filament::getPanel('caudete-se-mueve')));
+    }
+
+    public function test_the_login_of_a_site_rejects_the_accounts_of_another(): void
+    {
+        Filament::setCurrentPanel(Filament::getPanel('miradas-violetas'));
+
+        Livewire::test(Login::class)
+            ->fillForm([
+                'email' => $this->caudete->email,
+                'password' => 'secreto',
+            ])
+            ->call('authenticate')
+            ->assertHasFormErrors(['email']);
+
+        $this->assertGuest();
+    }
+
+    public function test_the_login_of_a_site_accepts_its_own_accounts(): void
+    {
+        Filament::setCurrentPanel(Filament::getPanel('caudete-se-mueve'));
+
+        Livewire::test(Login::class)
+            ->fillForm([
+                'email' => $this->caudete->email,
+                'password' => 'secreto',
+            ])
+            ->call('authenticate')
+            ->assertHasNoFormErrors();
+
+        $this->assertAuthenticatedAs($this->caudete);
+    }
+
+    public function test_each_panel_renders_its_resource_pages(): void
+    {
+        foreach (['/caudete-se-mueve/admin/posts', '/caudete-se-mueve/admin/pages', '/caudete-se-mueve/admin/categories'] as $url) {
+            $this->actingAs($this->caudete)->get($url)->assertOk();
         }
     }
 
-    public function test_the_panel_site_is_remembered_in_its_own_session_key(): void
+    public function test_each_panel_lists_only_the_content_of_its_own_site(): void
     {
-        $this->actingAs($this->admin)
-            ->withSession([IdentifyPanelSite::SESSION_KEY => 'miradas-violetas'])
-            ->get('/admin/posts')
-            ->assertOk()
-            ->assertSessionHas(IdentifyPanelSite::SESSION_KEY, 'miradas-violetas');
-
-        // Elegir sitio en el panel no debe tocar la clave del sitio público.
-        $this->assertNull(session(IdentifySite::SESSION_KEY));
-    }
-
-    public function test_the_panel_and_the_public_site_use_different_session_keys(): void
-    {
-        $this->assertNotSame(
-            IdentifyPanelSite::SESSION_KEY,
-            IdentifySite::SESSION_KEY,
-        );
-    }
-
-    public function test_the_panel_lists_only_posts_of_the_selected_site(): void
-    {
-        $this->activate('caudete-se-mueve');
+        $this->activar('caudete-se-mueve');
         Post::create(['title' => 'Noticia de Caudete', 'is_published' => true, 'published_at' => now()]);
 
-        $this->activate('miradas-violetas');
+        $this->activar('miradas-violetas');
         Post::create(['title' => 'Noticia de Miradas', 'is_published' => true, 'published_at' => now()]);
 
-        // Al arrancar el panel con Miradas seleccionado, la consulta que usa
-        // la tabla debe filtrar por ese sitio.
-        $this->actingAs($this->admin)
-            ->withSession([IdentifyPanelSite::SESSION_KEY => 'miradas-violetas'])
-            ->get('/admin/posts')
+        $this->verComo($this->caudete, '/caudete-se-mueve/admin/posts')
+            ->assertOk()
+            ->assertSee('Noticia de Caudete')
+            ->assertDontSee('Noticia de Miradas');
+
+        $this->verComo($this->miradas, '/miradas-violetas/admin/posts')
             ->assertOk()
             ->assertSee('Noticia de Miradas')
             ->assertDontSee('Noticia de Caudete');
     }
 
-    public function test_switching_the_panel_site_changes_what_is_listed(): void
+    public function test_each_panel_shows_the_name_of_its_own_site(): void
     {
-        $this->activate('caudete-se-mueve');
-        Post::create(['title' => 'Noticia de Caudete', 'is_published' => true, 'published_at' => now()]);
-
-        $this->activate('miradas-violetas');
-        Post::create(['title' => 'Noticia de Miradas', 'is_published' => true, 'published_at' => now()]);
-
-        $this->actingAs($this->admin)
-            ->withSession([IdentifyPanelSite::SESSION_KEY => 'caudete-se-mueve'])
-            ->get('/admin/posts')
+        $this->actingAs($this->caudete)
+            ->get('/caudete-se-mueve/admin')
             ->assertOk()
-            ->assertSee('Noticia de Caudete')
-            ->assertDontSee('Noticia de Miradas');
+            ->assertSee('Caudete Se Mueve')
+            ->assertDontSee('Miradas Violetas');
     }
 
-    public function test_the_panel_never_shows_content_of_every_site_at_once(): void
+    public function test_two_sites_can_hold_content_with_the_same_title(): void
     {
-        $this->activate('caudete-se-mueve');
+        $this->activar('caudete-se-mueve');
         Post::create(['title' => 'Titulo Común', 'is_published' => true, 'published_at' => now()]);
         Page::create(['title' => 'Pagina Común']);
         Category::create(['name' => 'Categoria Común']);
 
-        $this->activate('miradas-violetas');
+        $this->activar('miradas-violetas');
         Post::create(['title' => 'Titulo Común', 'is_published' => true, 'published_at' => now()]);
         Page::create(['title' => 'Pagina Común']);
         Category::create(['name' => 'Categoria Común']);
 
-        // Con Caudete seleccionado, cada tabla debe mostrar solo una fila,
-        // aunque los dos sitios tengan registros con el mismo nombre.
-        $this->actingAs($this->admin)
-            ->withSession([IdentifyPanelSite::SESSION_KEY => 'caudete-se-mueve'])
-            ->get('/admin/posts')
+        // Cada panel ve solo su fila, aunque los dos sitios usen el mismo
+        // titulo y el mismo slug.
+        $this->verComo($this->caudete, '/caudete-se-mueve/admin/posts')
+            ->assertOk()
+            ->assertSee('Titulo Común');
+
+        $this->verComo($this->miradas, '/miradas-violetas/admin/posts')
             ->assertOk()
             ->assertSee('Titulo Común');
     }
 
-    public function test_it_falls_back_to_the_default_when_the_session_site_disappears(): void
+    public function test_there_is_no_shared_panel_and_no_site_switcher(): void
     {
-        config(['sites.default' => 'caudete-se-mueve']);
-
-        $this->actingAs($this->admin)
-            ->withSession([IdentifyPanelSite::SESSION_KEY => 'sitio-borrado'])
-            ->get('/admin/posts')
-            ->assertOk()
-            ->assertSessionHas(IdentifyPanelSite::SESSION_KEY, 'caudete-se-mueve');
+        // El panel unico y el selector de sitio ya no existen: cada
+        // asociacion entra por su propia ruta.
+        $this->actingAs($this->caudete)->get('/admin')->assertNotFound();
+        $this->actingAs($this->caudete)->get('/caudete-se-mueve/admin/switch-site')->assertNotFound();
     }
 }

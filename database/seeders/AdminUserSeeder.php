@@ -3,28 +3,39 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Sites\SiteManager;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
     /**
-     * Crea el usuario con acceso al panel de Filament.
+     * Crea una cuenta de administracion por sitio.
      *
-     * Las credenciales se leen del entorno para no fijarlas en el repositorio.
+     * Cada panel solo acepta cuentas de su asociacion, asi que cada sitio
+     * necesita la suya. El correo sale de admin_email en el site.php de cada
+     * sitio y las contrasenas se leen del entorno para no fijarlas en el
+     * repositorio.
      */
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL', 'admin@asociaciones.test');
         $password = env('ADMIN_PASSWORD', 'asociaciones');
+        $name = env('ADMIN_NAME', 'Administracion');
 
-        User::query()->updateOrCreate(
-            ['email' => $email],
-            [
-                'name' => env('ADMIN_NAME', 'Administrador'),
-                'password' => Hash::make($password),
-                'email_verified_at' => now(),
-            ],
-        );
+        $sites = app(SiteManager::class);
+
+        foreach ($sites->enabled() as $slug => $site) {
+            $email = $site->adminEmail ?? "{$slug}@asociaciones.test";
+
+            User::query()->updateOrCreate(
+                ['email' => $email],
+                [
+                    'site_id' => $slug,
+                    'name' => "{$name} - {$site->name}",
+                    'password' => Hash::make($password),
+                    'email_verified_at' => now(),
+                ],
+            );
+        }
     }
 }
