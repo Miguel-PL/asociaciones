@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\IdentifySite;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,8 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([
+        __DIR__.'/../app/Sites/Commands',
+    ])
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->web(append: [
+            IdentifySite::class,
+        ]);
+
+        $middleware->alias([
+            'site' => IdentifySite::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

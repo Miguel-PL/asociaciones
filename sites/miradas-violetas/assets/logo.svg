@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" role="img" aria-label="Miradas Violetas">
+    <rect width="200" height="60" fill="none"/>
+    <g fill="none" stroke="#7e22ce" stroke-width="4" stroke-linecap="round">
+        <ellipse cx="22" cy="30" rx="13" ry="9"/>
+        <circle cx="22" cy="30" r="3.5" fill="#7e22ce" stroke="none"/>
+    </g>
+    <text x="70" y="26" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#7e22ce">Miradas</text>
+    <text x="70" y="45" font-family="system-ui, sans-serif" font-size="17" font-weight="400" fill="#db2777">Violetas</text>
+</svg>

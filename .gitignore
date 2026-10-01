@@ -28,5 +28,6 @@ Thumbs.db
 /public/build/
 /public/hot
 /public/storage
+/public/sites
 /storage/*.key
 /.phpunit.result.cache

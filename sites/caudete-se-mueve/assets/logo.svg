@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" role="img" aria-label="Caudete Se Mueve">
+    <rect width="200" height="60" fill="none"/>
+    <g fill="none" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round">
+        <circle cx="22" cy="30" r="12"/>
+        <path d="M34 30h12"/>
+        <path d="M46 22l10 8-10 8z" fill="#1d4ed8" stroke="none"/>
+    </g>
+    <text x="70" y="26" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#1d4ed8">Caudete</text>
+    <text x="70" y="45" font-family="system-ui, sans-serif" font-size="17" font-weight="400" fill="#0f766e">Se Mueve</text>
+</svg>
