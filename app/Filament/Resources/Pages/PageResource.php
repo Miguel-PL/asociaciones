@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pages;
 
+use App\Filament\Resources\Pages\Pages\CreatePage;
 use App\Filament\Resources\Pages\Pages\EditPage;
 use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Models\Page;
@@ -105,6 +106,7 @@ class PageResource extends Resource
     {
         return [
             'index' => ListPages::route('/'),
+            'create' => CreatePage::route('/create'),
             'edit' => EditPage::route('/{record}/edit'),
         ];
     }

@@ -12,10 +12,10 @@ class EditCategory extends EditRecord
 
     protected function getHeaderActions(): array
     {
+        // Sin RestoreAction: Category no usa SoftDeletes. Sin ViewAction: no hay
+        // pagina de vista registrada en el recurso.
         return [
             Actions\DeleteAction::make(),
-            Actions\RestoreAction::make(),
-            Actions\ViewAction::make(),
         ];
     }
 }

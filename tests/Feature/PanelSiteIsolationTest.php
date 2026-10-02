@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Auth\Login;
+use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Post;
@@ -219,5 +220,53 @@ class PanelSiteIsolationTest extends TestCase
         // asociacion entra por su propia ruta.
         $this->actingAs($this->caudete)->get('/admin')->assertNotFound();
         $this->actingAs($this->caudete)->get('/caudete-se-mueve/admin/switch-site')->assertNotFound();
+    }
+
+    public function test_each_panel_can_reach_the_create_and_edit_screens(): void
+    {
+        // El boton "Crear" de los listados tiene que llevar a una pantalla real:
+        // sin la ruta create, el CRUD del panel esta roto.
+        foreach (['posts', 'pages', 'categories'] as $recurso) {
+            $this->verComo($this->caudete, "/caudete-se-mueve/admin/{$recurso}/create")
+                ->assertOk();
+
+            $this->verComo($this->miradas, "/miradas-violetas/admin/{$recurso}/create")
+                ->assertOk();
+        }
+
+        $this->activar('caudete-se-mueve');
+        $registro = Category::create(['name' => 'Categoria para editar']);
+
+        $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->id}/edit")
+            ->assertOk()
+            ->assertSee('Categoria para editar');
+    }
+
+    public function test_content_created_from_a_panel_belongs_to_that_site(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $this->verComo($this->caudete, '/caudete-se-mueve/admin/categories/create')
+            ->assertOk();
+
+        Livewire::test(CreateCategory::class)
+            ->fillForm(['name' => 'Huerto comunitario'])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Huerto comunitario',
+            'site_id' => 'caudete-se-mueve',
+        ]);
+    }
+
+    public function test_a_user_cannot_edit_the_content_of_another_site(): void
+    {
+        // El registro existe y la URL es correcta, pero el SiteScope impide que
+        // el panel de la otra asociacion lo alcance.
+        $this->activar('miradas-violetas');
+        $registro = Category::create(['name' => 'Categoria de Miradas']);
+
+        $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->id}/edit")
+            ->assertNotFound();
     }
 }
