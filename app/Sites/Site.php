@@ -22,6 +22,7 @@ class Site implements Arrayable
         public readonly array $colors = [],
         public readonly ?string $logo = null,
         public readonly ?string $favicon = null,
+        public readonly ?string $socialImage = null,
         public readonly array $social = [],
         public readonly array $contact = [],
         public readonly array $footer = [],
@@ -59,6 +60,7 @@ class Site implements Arrayable
             colors: (array) ($config['colors'] ?? []),
             logo: $config['logo'] ?? null,
             favicon: $config['favicon'] ?? null,
+            socialImage: $config['social_image'] ?? null,
             social: (array) ($config['social'] ?? []),
             contact: (array) ($config['contact'] ?? []),
             footer: (array) ($config['footer'] ?? []),
@@ -127,6 +129,10 @@ class Site implements Arrayable
 
     /**
      * Resuelve una ruta de asset del sitio, o null si el archivo no existe.
+     *
+     * Acepta la ruta desde la carpeta de assets (logo.svg) y tambien desde el
+     * directorio del sitio (assets/logo.svg), que es como la guardan los
+     * site.php. Ambas cosas son el mismo archivo.
      */
     public function asset(?string $path): ?string
     {
@@ -135,12 +141,25 @@ class Site implements Arrayable
         }
 
         $relative = str_replace('/', DIRECTORY_SEPARATOR, ltrim($path, '/'));
+        $relative = preg_replace('#^assets'.preg_quote(DIRECTORY_SEPARATOR, '#').'#', '', $relative);
 
         if (! File::exists($this->assetsPath().DIRECTORY_SEPARATOR.$relative)) {
             return null;
         }
 
         return asset("sites/{$this->slug}/assets/{$relative}");
+    }
+
+    /**
+     * Imagen de reparto del sitio, o null si no tiene.
+     *
+     * Es un PNG o JPG de 1200x630, no el logo: las redes no saben dibujar un
+     * SVG, así que apuntar a logo.svg dejaría la tarjeta sin imagen. Ver
+     * README.md para cómo se genera.
+     */
+    public function socialImage(): ?string
+    {
+        return $this->asset($this->socialImage);
     }
 
     /**

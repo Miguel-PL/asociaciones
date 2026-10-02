@@ -115,6 +115,22 @@ para que un rastreo no reciba cookies de sesión.
 > los archivos estáticos de `public/`, así que ese archivo taparía la ruta y
 > dejaría el mismo `robots.txt` para todas las asociaciones.
 
+#### Imagen de reparto
+
+`social_image` en el `site.php` es la imagen que se ve al compartir en redes, y
+debe ser un PNG o JPG de 1200×630. **No puede ser el logo**: los SVG no se
+dibujan en WhatsApp, Facebook ni X, y una tarjeta sin imagen se ve peor que una
+con la imagen de la asociación. Si el sitio no la declara, la web no anuncia
+ninguna imagen en lugar de anunciar una que no existe.
+
+Las de los dos sitios actuales están en `sites/<slug>/assets/social.png`. Para
+regenerar una tras cambiar el nombre o el lema, se compone un SVG con los colores
+del `site.php` y se rasteriza con sharp:
+
+```bash
+npx sharp-cli -i tarjeta.svg -o sites/caudete-se-mueve/assets/social.png resize 1200 630 --format png
+```
+
 ## Panel de administración
 
 Cada sitio tiene su propio panel, en `/{slug}/admin`, por ejemplo

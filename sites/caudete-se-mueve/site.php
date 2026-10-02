@@ -31,6 +31,10 @@ return [
 
     'favicon' => 'assets/favicon.svg',
 
+    // Tarjeta de reparto en redes, 1200x630. Las redes no aceptan SVG, asi que
+    // no puede ser el logo. Ver README.md para como se genera.
+    'social_image' => 'assets/social.png',
+
     // PENDIENTE: datos de contacto de relleno hasta confirmar los reales.
     'contact' => [
         'email' => 'hola@caudetese-mueve.es',

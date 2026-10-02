@@ -70,4 +70,32 @@ class SiteTest extends TestCase
         $this->assertNull($site->asset(null));
         $this->assertNotNull($site->asset('logo.svg'));
     }
+
+    public function test_it_resolves_an_asset_written_from_the_site_directory(): void
+    {
+        // Los site.php guardan assets/logo.svg y las vistas pasan logo.svg: es
+        // el mismo archivo y no debe depender de quien pregunta.
+        $site = Site::load('sitio-de-prueba');
+
+        $this->assertSame($site->asset('logo.svg'), $site->asset('assets/logo.svg'));
+    }
+
+    public function test_it_returns_null_when_the_site_has_no_social_card(): void
+    {
+        // Un sitio recien anadido puede no tener todavia su tarjeta generada, y
+        // es preferible no anunciar imagen a anunciar una que no existe.
+        $site = Site::fromConfig('sitio-de-prueba', ['name' => 'Sitio de prueba']);
+
+        $this->assertNull($site->socialImage());
+    }
+
+    public function test_the_social_card_is_null_when_the_configured_file_is_missing(): void
+    {
+        $site = Site::fromConfig('sitio-de-prueba', [
+            'name' => 'Sitio de prueba',
+            'social_image' => 'assets/social.png',
+        ]);
+
+        $this->assertNull($site->socialImage());
+    }
 }

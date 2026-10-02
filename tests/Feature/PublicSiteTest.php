@@ -343,14 +343,17 @@ class PublicSiteTest extends TestCase
         $this->assertStringContainsString('article:published_time', $html);
     }
 
-    public function test_a_news_without_a_cover_image_falls_back_to_the_site_logo(): void
+    public function test_a_news_without_a_cover_image_falls_back_to_the_social_card_of_the_site(): void
     {
         $this->activar('caudete-se-mueve');
         $post = $this->noticia('Noticia sin portada');
 
-        $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+        $html = $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
             ->assertOk()
-            ->assertSee('<meta property="og:image" content="http://caudete-se-mueve.test/sites/caudete-se-mueve/assets/logo.svg">', false);
+            ->getContent();
+
+        // La tarjeta del sitio, y no el logo: un SVG no se dibuja en redes.
+        $this->assertStringContainsString('<meta property="og:image" content="http://caudete-se-mueve.test/sites/caudete-se-mueve/assets/social.png">', $html);
     }
 
     public function test_the_home_page_describes_itself_with_the_data_of_the_site(): void

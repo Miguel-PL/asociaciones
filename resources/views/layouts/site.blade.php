@@ -28,11 +28,15 @@
         Los títulos y las descripciones se leen de las mismas secciones que
         ya rellenan el title y el meta description, para que ambos no puedan
         acabar diciendo cosas distintas.
+
+        La imagen es la portada si la vista la aporta y, si no, la tarjeta del
+        sitio. Nunca el logo: las redes no saben dibujar un SVG y una tarjeta
+        sin imagen se ve peor que una con la imagen de la asociación.
     --}}
     @php
         $ogTitle = trim($__env->yieldContent('title', $site->name));
         $ogDescription = trim((string) preg_replace('/\s+/u', ' ', $__env->yieldContent('meta_description', $site->description)));
-        $ogImage = $__env->yieldContent('og_image') ?: $site->asset('logo.svg');
+        $ogImage = $__env->yieldContent('og_image') ?: $site->socialImage();
     @endphp
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:site_name" content="{{ $site->name }}">
@@ -55,8 +59,8 @@
         <meta name="twitter:image" content="{{ $ogImage }}">
     @endif
 
-    @if ($site->asset('favicon.svg'))
-        <link rel="icon" href="{{ $site->asset('favicon.svg') }}" type="image/svg+xml">
+    @if ($site->asset($site->favicon))
+        <link rel="icon" href="{{ $site->asset($site->favicon) }}" type="image/svg+xml">
     @endif
 
     {{-- Colores de esta web concreta, antes de cargar el CSS que los usa. --}}
@@ -81,8 +85,8 @@
 <header class="border-b border-stone-200 bg-white">
     <div class="container-site flex flex-wrap items-center justify-between gap-4 py-4">
         <a href="{{ route('home') }}" class="flex items-center gap-3">
-            @if ($site->asset('logo.svg'))
-                <img src="{{ $site->asset('logo.svg') }}" alt="" class="h-10 w-auto">
+            @if ($site->asset($site->logo))
+                <img src="{{ $site->asset($site->logo) }}" alt="" class="h-10 w-auto">
             @endif
             <span>
                 <span class="block text-lg leading-tight font-semibold text-stone-900">{{ $site->name }}</span>
