@@ -45,6 +45,15 @@ return [
         'twitter' => 'https://twitter.com/',
     ],
 
+    /*
+    | Páginas que aparecen en el menú de la cabecera. Son slugs de páginas ya
+    | publicadas: el enlace solo se muestra si la página existe.
+    */
+    'nav' => [
+        'quienes-somos',
+        'junta-directiva',
+    ],
+
     'footer' => [
         'legal' => 'aviso-legal',
         'privacy' => 'privacidad',

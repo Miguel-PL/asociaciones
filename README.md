@@ -74,6 +74,28 @@ Cada sitio tiene su propia cuenta de administración, creada con
 `php artisan db:seed`. El correo sale de `admin_email` en el `site.php` de cada
 sitio y la contraseña se ajusta con `ADMIN_PASSWORD`.
 
+## Web pública
+
+Las dos webs comparten las mismas rutas y vistas: lo único que cambia es el
+dominio por el que se entra. `IdentifySite` resuelve el sitio en cada petición y
+el contenido se filtra siempre por `site_id`.
+
+| Ruta | Contenido |
+|------|-----------|
+| `/` | Portada con las últimas noticias publicadas |
+| `/noticias` | Listado de noticias |
+| `/noticias/{slug}` | Noticia completa |
+| `/categorias/{slug}` | Noticias de una categoría |
+| `/{slug}` | Página estática |
+
+Una URL copiada de otra asociación no funciona: pedir en un dominio el slug de
+una noticia, categoría o página del otro sitio devuelve `404`, y la página
+tampoco se resuelve aunque exista en el otro sitio.
+
+La identidad visual de cada web sale de su `site.php` (`colors`, `logo`,
+`favicon`, `social`, `contact`, `footer`). Los colores viajan como variables CSS,
+así que todas las webs comparten una única hoja de estilos compilada.
+
 ## Panel de administración
 
 Cada sitio tiene su propio panel, en `/{slug}/admin`, por ejemplo

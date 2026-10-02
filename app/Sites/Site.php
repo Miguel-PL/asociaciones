@@ -25,6 +25,14 @@ class Site implements Arrayable
         public readonly array $social = [],
         public readonly array $contact = [],
         public readonly array $footer = [],
+
+        /**
+         * Slugs de las páginas que forman el menú de la cabecera.
+         *
+         * @var array<int, string>
+         */
+        public readonly array $nav = [],
+
         public readonly ?string $adminEmail = null,
         public readonly bool $enabled = true,
     ) {}
@@ -54,6 +62,7 @@ class Site implements Arrayable
             social: (array) ($config['social'] ?? []),
             contact: (array) ($config['contact'] ?? []),
             footer: (array) ($config['footer'] ?? []),
+            nav: array_values((array) ($config['nav'] ?? [])),
             adminEmail: $config['admin_email'] ?? null,
             enabled: (bool) ($config['enabled'] ?? true),
         );
@@ -181,6 +190,7 @@ class Site implements Arrayable
             'social' => $this->social,
             'contact' => $this->contact,
             'footer' => $this->footer,
+            'nav' => $this->nav,
             'admin_email' => $this->adminEmail,
             'enabled' => $this->enabled,
         ];

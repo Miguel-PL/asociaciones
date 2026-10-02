@@ -43,6 +43,11 @@ return [
         'facebook' => 'https://facebook.com/',
     ],
 
+    'nav' => [
+        'quienes-somos',
+        'como-participar',
+    ],
+
     'footer' => [
         'legal' => 'aviso-legal',
         'privacy' => 'privacidad',
