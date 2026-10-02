@@ -30,8 +30,10 @@ Route::get('/categorias/{category}', [CategoryController::class, 'show'])->name(
 |
 | Se excluyen a mano los segmentos que sirven rutas del panel, de salud o de
 | archivos, para que /admin siga siendo un 404 y no se interprete como el
-| slug de una página.
+| slug de una página. El patrón ya rechaza los puntos, así que /sitemap.xml
+| nunca colisiona; los dos nombres se excluyen igualmente por si algún día se
+| acepta un slug con punto.
 */
 Route::get('/{page}', [PageController::class, 'show'])
-    ->where('page', '^(?!admin|up|storage|api|css|js|assets)[a-z0-9]+(?:-[a-z0-9]+)*$')
+    ->where('page', '^(?!admin|up|storage|api|css|js|assets|sitemap|robots)[a-z0-9]+(?:-[a-z0-9]+)*$')
     ->name('pages.show');

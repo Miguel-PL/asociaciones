@@ -350,7 +350,7 @@ class PanelSiteIsolationTest extends TestCase
         $this->activar('caudete-se-mueve');
         $registro = Category::create(['name' => 'Categoria para editar']);
 
-        $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->id}/edit")
+        $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->slug}/edit")
             ->assertOk()
             ->assertSee('Categoria para editar');
     }
@@ -379,7 +379,7 @@ class PanelSiteIsolationTest extends TestCase
         $this->activar('miradas-violetas');
         $registro = Category::create(['name' => 'Categoria de Miradas']);
 
-        $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->id}/edit")
+        $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->slug}/edit")
             ->assertNotFound();
     }
 }

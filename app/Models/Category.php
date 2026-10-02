@@ -25,6 +25,17 @@ class Category extends Model
     }
 
     /**
+     * Las categorias se localizan por su slug, no por su id.
+     *
+     * Igual que Post y Page: el id es un numero interno que no debe aparecer en
+     * las URLs publicas.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
      * Noticias de la categoria.
      *
      * @return HasMany<Post, $this>

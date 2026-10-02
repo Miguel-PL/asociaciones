@@ -96,6 +96,25 @@ La identidad visual de cada web sale de su `site.php` (`colors`, `logo`,
 `favicon`, `social`, `contact`, `footer`). Los colores viajan como variables CSS,
 así que todas las webs comparten una única hoja de estilos compilada.
 
+### SEO
+
+Cada página declara su título, descripción, canonical y sus datos de Open Graph
+y Twitter Cards, con la identidad del sitio que se está sirviendo.
+
+| Ruta | Contenido |
+|------|-----------|
+| `/sitemap.xml` | Noticias, categorías y páginas publicadas de ese sitio |
+| `/robots.txt` | Apunta a su sitemap y oculta `/admin` de ese sitio |
+
+Son rutas generadas, no archivos de `public/`, porque cada web se sirve en su
+propio dominio: un único archivo en disco describiría solo el sitio que se
+sirvió al generarlo. Por eso están en `routes/seo.php`, fuera del grupo `web`
+para que un rastreo no reciba cookies de sesión.
+
+> No hay que volver a crear `public/robots.txt`. El servidor web sirve primero
+> los archivos estáticos de `public/`, así que ese archivo taparía la ruta y
+> dejaría el mismo `robots.txt` para todas las asociaciones.
+
 ## Panel de administración
 
 Cada sitio tiene su propio panel, en `/{slug}/admin`, por ejemplo

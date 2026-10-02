@@ -17,6 +17,44 @@
 
     <link rel="canonical" href="{{ $canonical ?? url()->current() }}">
 
+    {{--
+        Open Graph y Twitter Cards.
+
+        Las vistas sobrescriben solo lo que aporta: una noticia cambia el
+        título, la entradilla y la imagen; una página, el título y su resumen.
+        Lo que no se declare cae al nombre y la descripción de la asociación,
+        así que ninguna vista tiene que acordarse de rellenarlo todo.
+
+        Los títulos y las descripciones se leen de las mismas secciones que
+        ya rellenan el title y el meta description, para que ambos no puedan
+        acabar diciendo cosas distintas.
+    --}}
+    @php
+        $ogTitle = trim($__env->yieldContent('title', $site->name));
+        $ogDescription = trim((string) preg_replace('/\s+/u', ' ', $__env->yieldContent('meta_description', $site->description)));
+        $ogImage = $__env->yieldContent('og_image') ?: $site->asset('logo.svg');
+    @endphp
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="{{ $site->name }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:url" content="{{ $canonical ?? url()->current() }}">
+    <meta property="og:locale" content="es_ES">
+    @if ($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+    @endif
+
+    @if ($ogPublishedTime = $__env->yieldContent('og_published_time'))
+        <meta property="article:published_time" content="{{ trim($ogPublishedTime) }}">
+    @endif
+
+    <meta name="twitter:card" content="{{ $ogImage ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    @if ($ogImage)
+        <meta name="twitter:image" content="{{ $ogImage }}">
+    @endif
+
     @if ($site->asset('favicon.svg'))
         <link rel="icon" href="{{ $site->asset('favicon.svg') }}" type="image/svg+xml">
     @endif

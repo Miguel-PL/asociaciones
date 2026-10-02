@@ -254,4 +254,115 @@ class PublicSiteTest extends TestCase
         $this->visitar('caudete-se-mueve', '/admin')->assertNotFound();
         $this->visitar('caudete-se-mueve', '/api')->assertNotFound();
     }
+
+    public function test_the_sitemap_lists_only_the_content_of_the_site_being_served(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $this->noticia('Noticia de Caudete');
+        $categoria = Category::create(['name' => 'Actividades de Caudete']);
+        $this->pagina('Pagina de Caudete');
+
+        $this->activar('miradas-violetas');
+        $this->noticia('Noticia de Miradas');
+        $this->pagina('Pagina de Miradas');
+
+        $sitemap = $this->visitar('miradas-violetas', '/sitemap.xml')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+
+        $xml = $sitemap->getContent();
+
+        $this->assertStringContainsString('<loc>http://miradas-violetas.test</loc>', $xml);
+        $this->assertStringContainsString('<loc>http://miradas-violetas.test/noticias/noticia-de-miradas</loc>', $xml);
+        $this->assertStringContainsString('<loc>http://miradas-violetas.test/pagina-de-miradas</loc>', $xml);
+
+        $this->assertStringNotContainsString('caudete', $xml);
+        $this->assertStringNotContainsString('Noticia de Caudete', $xml);
+    }
+
+    public function test_the_sitemap_skips_empty_categories_and_drafts(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $vacia = Category::create(['name' => 'Categoria vacia']);
+        $conNoticias = Category::create(['name' => 'Actividades']);
+        $this->noticia('Visible', ['category_id' => $conNoticias->id]);
+        $this->noticia('Borrador', ['is_published' => false]);
+        $this->pagina('Borrador', ['is_published' => false]);
+
+        $xml = $this->visitar('caudete-se-mueve', '/sitemap.xml')->getContent();
+
+        // Una categoría sin noticias publicadas sería una página vacía.
+        $this->assertStringNotContainsString($vacia->slug, $xml);
+        $this->assertStringContainsString('/categorias/'.$conNoticias->slug, $xml);
+        $this->assertStringNotContainsString('/noticias/borrador', $xml);
+        $this->assertStringNotContainsString('/borrador<', $xml);
+    }
+
+    public function test_each_site_serves_its_own_sitemap(): void
+    {
+        $this->visitar('caudete-se-mueve', '/sitemap.xml')
+            ->assertOk()
+            ->assertSee('http://caudete-se-mueve.test', false);
+
+        $this->visitar('miradas-violetas', '/sitemap.xml')
+            ->assertOk()
+            ->assertSee('http://miradas-violetas.test', false);
+    }
+
+    public function test_robots_points_to_the_sitemap_and_hides_the_panel(): void
+    {
+        $robots = $this->visitar('caudete-se-mueve', '/robots.txt')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->getContent();
+
+        $this->assertStringContainsString('Sitemap: http://caudete-se-mueve.test/sitemap.xml', $robots);
+        $this->assertStringContainsString('Disallow: /caudete-se-mueve/admin/', $robots);
+        $this->assertStringNotContainsString('miradas', $robots);
+    }
+
+    public function test_a_news_describes_itself_to_the_networks(): void
+    {
+        // Open Graph y Twitter Cards: lo que se comparte en redes.
+        $this->activar('caudete-se-mueve');
+        $post = $this->noticia('Noticia para redes', [
+            'excerpt' => 'La entradilla que vera el navegador al compartir.',
+            'cover_image' => 'portadas/noticia.jpg',
+        ]);
+
+        $html = $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('<meta property="og:type" content="article">', $html);
+        $this->assertStringContainsString('<meta property="og:title" content="Noticia para redes · Caudete Se Mueve">', $html);
+        $this->assertStringContainsString('og:description" content="La entradilla que vera el navegador al compartir."', $html);
+        $this->assertStringContainsString('og:image" content="http://caudete-se-mueve.test/storage/portadas/noticia.jpg"', $html);
+        $this->assertStringContainsString('og:url" content="http://caudete-se-mueve.test/noticias/'.$post->slug.'"', $html);
+        $this->assertStringContainsString('<meta name="twitter:card" content="summary_large_image">', $html);
+        $this->assertStringContainsString('article:published_time', $html);
+    }
+
+    public function test_a_news_without_a_cover_image_falls_back_to_the_site_logo(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $post = $this->noticia('Noticia sin portada');
+
+        $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+            ->assertOk()
+            ->assertSee('<meta property="og:image" content="http://caudete-se-mueve.test/sites/caudete-se-mueve/assets/logo.svg">', false);
+    }
+
+    public function test_the_home_page_describes_itself_with_the_data_of_the_site(): void
+    {
+        // Sin secciones propias, los metadatos salen del site.php de cada sitio.
+        $this->visitar('caudete-se-mueve', '/')
+            ->assertOk()
+            ->assertSee('<meta property="og:site_name" content="Caudete Se Mueve">', false)
+            ->assertSee('<meta property="og:type" content="website">', false);
+
+        $this->visitar('miradas-violetas', '/')
+            ->assertOk()
+            ->assertSee('<meta property="og:site_name" content="Miradas Violetas">', false);
+    }
 }
