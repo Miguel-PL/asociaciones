@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['site_id', 'name', 'email', 'password'])]
+#[Fillable(['site_id', 'is_super_admin', 'name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser
 {
@@ -28,10 +28,22 @@ class User extends Authenticatable implements FilamentUser
      *
      * Filament responde 403 cuando esto devuelve false, de modo que una
      * cuenta de otra asociacion ni llega a ver el panel ajeno.
+     *
+     * La excepcion es la cuenta de administracion de la plataforma: entra en
+     * todos los paneles, pero sigue sin pertenecer a ninguna asociacion, de
+     * modo que dentro de cada uno solo ve el contenido de ese sitio.
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->belongsToSite($panel->getId());
+        return $this->isSuperAdmin() || $this->belongsToSite($panel->getId());
+    }
+
+    /**
+     * Cuenta de administracion de toda la plataforma, no de una asociacion.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return (bool) $this->is_super_admin;
     }
 
     public function belongsToSite(string $slug): bool
@@ -59,6 +71,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_super_admin' => 'boolean',
         ];
     }
 }

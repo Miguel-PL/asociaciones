@@ -110,3 +110,23 @@ editar lo de la otra.
 
 El código de recursos, páginas y widgets es común a todos los paneles; no se
 duplica nada por sitio.
+
+## Cuentas de administración
+
+| Cuenta | Site | Paneles a los que entra |
+|--------|------|-------------------------|
+| `admin@asociaciones.test` | ninguno | todos (superadmin) |
+| `caudete@asociaciones.test` | caudete-se-mueve | solo el de Caudete |
+| `miradas@asociaciones.test` | miradas-violetas | solo el de Miradas |
+
+Las contraseñas salen de `SUPERADMIN_PASSWORD` y `ADMIN_PASSWORD`, con
+`asociaciones` como valor por defecto en local. Hay que cambiarlas antes de
+publicar nada.
+
+La cuenta de la plataforma se reconoce por `is_super_admin`, no por `site_id`:
+entra en todos los paneles, pero dentro de cada uno sigue viendo solo el
+contenido de ese sitio. Estar en todos los paneles no significa ver todo el
+contenido de golpe; para eso hay que entrar en el panel del sitio que interesa.
+
+`php artisan db:seed` crea las tres y es idempotente: se puede volver a lanzar
+para recuperar el acceso si alguien se queda fuera.

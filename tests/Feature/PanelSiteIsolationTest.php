@@ -10,9 +10,11 @@ use App\Models\Post;
 use App\Models\User;
 use App\Sites\Site;
 use App\Sites\SiteManager;
+use Database\Seeders\AdminUserSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -33,6 +35,8 @@ class PanelSiteIsolationTest extends TestCase
 
     protected User $sinSitio;
 
+    protected User $superadmin;
+
     protected SiteManager $sites;
 
     protected function setUp(): void
@@ -46,6 +50,12 @@ class PanelSiteIsolationTest extends TestCase
         $this->sinSitio = User::create([
             'name' => 'Sin sitio',
             'email' => 'sinsitio@example.test',
+            'password' => 'secreto',
+        ]);
+        $this->superadmin = User::create([
+            'is_super_admin' => true,
+            'name' => 'Superadmin',
+            'email' => 'superadmin@example.test',
             'password' => 'secreto',
         ]);
     }
@@ -154,6 +164,109 @@ class PanelSiteIsolationTest extends TestCase
             ->assertHasNoFormErrors();
 
         $this->assertAuthenticatedAs($this->caudete);
+    }
+
+    public function test_the_superadmin_enters_every_panel(): void
+    {
+        $this->verComo($this->superadmin, '/caudete-se-mueve/admin')->assertOk();
+        $this->verComo($this->superadmin, '/miradas-violetas/admin')->assertOk();
+
+        $this->assertTrue($this->superadmin->canAccessPanel(Filament::getPanel('caudete-se-mueve')));
+        $this->assertTrue($this->superadmin->canAccessPanel(Filament::getPanel('miradas-violetas')));
+    }
+
+    public function test_the_superadmin_can_log_in_on_any_panel(): void
+    {
+        // El login filtra por site_id, y el superadmin no pertenece a ninguna
+        // asociacion: sin esta excepcion no podria entrar en ningun panel.
+        foreach (['caudete-se-mueve', 'miradas-violetas'] as $slug) {
+            Filament::setCurrentPanel(Filament::getPanel($slug));
+
+            Livewire::test(Login::class)
+                ->fillForm([
+                    'email' => $this->superadmin->email,
+                    'password' => 'secreto',
+                ])
+                ->call('authenticate')
+                ->assertHasNoFormErrors();
+
+            $this->assertAuthenticatedAs($this->superadmin);
+
+            Auth::logout();
+            $this->flushSession();
+        }
+    }
+
+    public function test_the_superadmin_does_not_turn_the_other_accounts_into_admin(): void
+    {
+        // Que exista una cuenta que lo ve todo no debe relajar el aislamiento
+        // del resto: estas dos siguen siendo cuentas de su asociacion.
+        $this->assertFalse($this->caudete->isSuperAdmin());
+        $this->assertFalse($this->sinSitio->isSuperAdmin());
+        $this->assertNull($this->superadmin->site_id);
+
+        $this->verComo($this->caudete, '/miradas-violetas/admin')->assertForbidden();
+        $this->verComo($this->sinSitio, '/caudete-se-mueve/admin')->assertForbidden();
+    }
+
+    public function test_the_superadmin_only_sees_the_content_of_the_panel_it_is_in(): void
+    {
+        // Puede entrar en los dos paneles, pero dentro de cada uno sigue viendo
+        // un solo sitio: entrar en un panel no le da acceso al contenido de los
+        // demas.
+        $this->activar('caudete-se-mueve');
+        Post::create(['title' => 'Noticia de Caudete', 'is_published' => true, 'published_at' => now()]);
+
+        $this->activar('miradas-violetas');
+        Post::create(['title' => 'Noticia de Miradas', 'is_published' => true, 'published_at' => now()]);
+
+        $this->verComo($this->superadmin, '/caudete-se-mueve/admin/posts')
+            ->assertOk()
+            ->assertSee('Noticia de Caudete')
+            ->assertDontSee('Noticia de Miradas');
+
+        $this->verComo($this->superadmin, '/miradas-violetas/admin/posts')
+            ->assertOk()
+            ->assertSee('Noticia de Miradas')
+            ->assertDontSee('Noticia de Caudete');
+    }
+
+    public function test_content_created_by_the_superadmin_goes_to_the_site_of_the_panel(): void
+    {
+        // El superadmin no tiene site_id, asi que si el panel no lo fijara, el
+        // contenido se crearia sin sitio y no apareceria en ninguna web.
+        $this->activar('caudete-se-mueve');
+        $this->verComo($this->superadmin, '/caudete-se-mueve/admin/categories/create')
+            ->assertOk();
+
+        Livewire::test(CreateCategory::class)
+            ->fillForm(['name' => 'Categoria desde la superadmin'])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Categoria desde la superadmin',
+            'site_id' => 'caudete-se-mueve',
+        ]);
+    }
+
+    public function test_the_seeder_creates_a_usable_superadmin(): void
+    {
+        // Es la cuenta con la que se trabaja a diario, asi que el seeder tiene
+        // que dejarla lista y no duplicarla al re-ejecutarse.
+        $this->seed(AdminUserSeeder::class);
+
+        $superadmin = User::query()->where('email', 'admin@asociaciones.test')->sole();
+
+        $this->assertSame('admin@asociaciones.test', $superadmin->email);
+        $this->assertNull($superadmin->site_id);
+        $this->assertTrue(Hash::check('asociaciones', $superadmin->password));
+
+        $this->actingAs($superadmin)->get('/miradas-violetas/admin')->assertOk();
+
+        $this->seed(AdminUserSeeder::class);
+
+        $this->assertSame(1, User::query()->where('email', 'admin@asociaciones.test')->count());
     }
 
     public function test_each_panel_renders_its_resource_pages(): void
