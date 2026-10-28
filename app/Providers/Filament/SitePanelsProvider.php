@@ -13,7 +13,9 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
+use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -44,6 +46,10 @@ class SitePanelsProvider extends ServiceProvider
      */
     public function register(): void
     {
+        FilamentAsset::register([
+            Css::make('panel-login', asset('css/filament/panel.css')),
+        ]);
+
         $sites = $this->app->make(SiteManager::class);
 
         $default = $sites->default()?->slug;
@@ -57,11 +63,18 @@ class SitePanelsProvider extends ServiceProvider
 
     protected function panelFor(Site $site, bool $isDefault): Panel
     {
+        $logoUrl = $site->asset($site->logo);
+        $brandName = $site->name;
+
         $panel = Panel::make()
             ->id($site->slug)
             ->path($site->slug.'/admin')
             ->login(Login::class)
             ->colors($this->colorsFor($site))
+            ->brandName($brandName)
+            ->brandLogo($logoUrl)
+            ->brandLogoHeight('2.5rem')
+            ->darkMode(false)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

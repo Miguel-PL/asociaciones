@@ -1,0 +1,144 @@
+/* Mejoras visuales para el login de Filament por sitio */
+.fi-simple-page {
+    background: radial-gradient(circle at top, color-mix(in srgb, var(--primary-500) 8%, transparent), transparent 55%),
+        radial-gradient(circle at bottom, color-mix(in srgb, var(--primary-600) 6%, transparent), transparent 60%),
+        #f8fafc;
+}
+
+.fi-simple-main-ctn {
+    padding-block: 2rem;
+}
+
+.fi-simple-page-header {
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.fi-simple-page-header-heading {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: rgb(15 23 42);
+}
+
+.fi-simple-page-header-subheading {
+    font-size: 0.95rem;
+    color: rgb(71 85 105);
+}
+
+.fi-simple-page-content {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.fi-simple-page .fi-section {
+    border-radius: 1rem;
+    border: 1px solid rgb(226 232 240);
+    background: rgb(255 255 255);
+    box-shadow: 0 40px 60px -40px rgb(15 23 42 / 0.35);
+    overflow: hidden;
+}
+
+.fi-simple-page .fi-section-content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.fi-simple-page .fi-fo-field-wrp-label span {
+    font-weight: 600;
+    color: rgb(30 41 59);
+}
+
+.fi-simple-page .fi-input-wrp {
+    border-radius: 0.75rem;
+    border: 1px solid rgb(203 213 225);
+    background: rgb(255 255 255);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    align-items: stretch;
+    min-height: 2.75rem;
+}
+
+.fi-simple-page .fi-input-wrp:focus-within {
+    border-color: color-mix(in srgb, var(--primary-500) 70%, white);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-500) 12%, transparent);
+}
+
+.fi-simple-page .fi-input {
+    font-size: 0.98rem;
+    padding-block: 0.7rem;
+    line-height: 1.5rem;
+    min-height: 2.75rem;
+}
+
+.fi-simple-page .fi-input-wrp-suffix {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding-inline: 0.375rem !important;
+    min-width: 2.75rem !important;
+    flex-shrink: 0 !important;
+}
+
+.fi-simple-page .fi-input-wrp-suffix .fi-icon-btn,
+.fi-simple-page .fi-input-wrp-suffix button[type='button'] {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-width: 2.25rem !important;
+    min-height: 2.25rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0.5rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+}
+
+.fi-simple-page .fi-input-wrp-suffix .fi-icon-btn svg,
+.fi-simple-page .fi-input-wrp-suffix button svg {
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+    display: block !important;
+}
+
+.fi-simple-page .fi-checkbox-label {
+    color: rgb(51 65 85);
+}
+
+.fi-simple-page form .fi-form-actions {
+    width: 100%;
+}
+.fi-simple-page form .fi-btn[type='submit'],
+.fi-simple-page form button[type='submit'],
+.fi-simple-page .fi-form-actions .fi-btn {
+    border-radius: 0.75rem !important;
+    font-weight: 600 !important;
+    font-size: 0.98rem !important;
+    line-height: 1.5rem !important;
+    padding: 0.75rem 1.5rem !important;
+    min-height: 2.875rem !important;
+    height: auto !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--primary-600) 80%, transparent) !important;
+    gap: 0.5rem !important;
+}
+
+.fi-simple-page form .fi-btn[type='submit'] .fi-btn-label,
+.fi-simple-page form button[type='submit'] span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+@media (max-width: 640px) {
+    .fi-simple-page .fi-section-content {
+        padding: 1.5rem;
+    }
+
+    .fi-simple-page-header-heading {
+        font-size: 1.6rem;
+    }
+}
