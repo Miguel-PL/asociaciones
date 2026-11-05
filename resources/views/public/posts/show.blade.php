@@ -8,12 +8,12 @@
 @section('og_published_time', $post->published_at?->toAtomString())
 
 @section('content')
-    <article class="mx-auto max-w-3xl">
+    <article class="editorial-page">
         <p class="text-sm">
             <a href="{{ route('posts.index') }}" class="link">Noticias</a>
         </p>
 
-        <h1 class="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+        <header class="page-heading article-heading"><p class="eyebrow">Voces de Caudete</p><h1>
             {{ $post->title }}
         </h1>
 
@@ -30,13 +30,14 @@
                 </time>
             @endif
         </p>
+        </header>
+
+        @if ($post->cover_image_url)
+            <figure class="article-cover"><img src="{{ $post->cover_image_url }}" alt=""></figure>
+        @endif
 
         <div class="prose-body mt-8 text-stone-700">
-            @foreach (preg_split('/\R{2,}/', trim($post->body ?? '')) as $paragraph)
-                @if (trim($paragraph) !== '')
-                    <p>{{ trim($paragraph) }}</p>
-                @endif
-            @endforeach
+            @include('public.partials.rich-content', ['content' => $post->body])
         </div>
     </article>
 

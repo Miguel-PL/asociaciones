@@ -16,10 +16,19 @@ trait HasSlug
     public static function bootHasSlug(): void
     {
         static::creating(function (self $model): void {
-            if (blank($model->slug)) {
-                $model->slug = $model->generateUniqueSlug();
-            }
+            $model->ensureSlug();
         });
+
+        static::updating(function (self $model): void {
+            $model->ensureSlug();
+        });
+    }
+
+    protected function ensureSlug(): void
+    {
+        if (blank($this->slug)) {
+            $this->slug = $this->generateUniqueSlug();
+        }
     }
 
     protected function generateUniqueSlug(): string

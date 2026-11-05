@@ -73,6 +73,7 @@ class PostResource extends Resource
                 FileUpload::make('cover_image')
                     ->label('Imagen de portada')
                     ->image()
+                    ->disk('public')
                     ->directory('portadas')
                     ->maxSize(4096)
                     ->columnSpanFull(),

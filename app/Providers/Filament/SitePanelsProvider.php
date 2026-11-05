@@ -46,8 +46,10 @@ class SitePanelsProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $panelCssPath = public_path('css/filament/panel.css');
+
         FilamentAsset::register([
-            Css::make('panel-login', asset('css/filament/panel.css')),
+            Css::make('panel-login', asset('css/filament/panel.css').'?v='.filemtime($panelCssPath)),
         ]);
 
         $sites = $this->app->make(SiteManager::class);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Models\SiteSetting;
 use App\Sites\Site;
 use App\Sites\SiteManager;
 use Illuminate\Contracts\View\View;
@@ -26,10 +27,13 @@ abstract class SiteController extends Controller
      */
     protected function viewData(Site $site, array $extra = []): array
     {
+        $settings = SiteSetting::forSite($site);
+
         return [
             'site' => $site,
             'navPages' => $this->navPages(),
-            'socialLinks' => $site->social,
+            'footerContact' => $settings->footerContact(),
+            'socialLinks' => $settings->socialLinks(),
             'legalLinks' => $this->legalLinks($site),
             ...$extra,
         ];
@@ -47,28 +51,43 @@ abstract class SiteController extends Controller
     }
 
     /**
-     * Páginas de menú, indexadas por slug.
+     * Páginas publicadas para el menú principal; las configuradas conservan
+     * su orden y las nuevas se añaden por título.
      *
-     * @return Collection<string, Page>
+     * @return Collection<int, Page>
      */
     protected function navPages(): Collection
     {
+        $site = app(SiteManager::class)->current();
+        $configuredOrder = $site?->nav ?? [];
+        $footerSlugs = array_values($site?->footer ?? []);
+
         return Page::query()
             ->published()
-            ->whereIn('slug', $this->navSlugs())
-            ->orderBy('title')
+            // Los enlaces legales ya aparecen en el pie, no repetirlos arriba.
+            ->whereNotIn('slug', $footerSlugs)
             ->get()
-            ->keyBy('slug');
-    }
+            // Mantener primero el orden configurado y añadir páginas nuevas
+            // después, ordenadas por título.
+            ->sort(function (Page $left, Page $right) use ($configuredOrder): int {
+                $leftPosition = array_search($left->slug, $configuredOrder, true);
+                $rightPosition = array_search($right->slug, $configuredOrder, true);
 
-    /**
-     * Slugs de menú declarados por el sitio.
-     *
-     * @return array<int, string>
-     */
-    protected function navSlugs(): array
-    {
-        return app(SiteManager::class)->current()?->nav ?? [];
+                if ($leftPosition !== false || $rightPosition !== false) {
+                    if ($leftPosition === false) {
+                        return 1;
+                    }
+
+                    if ($rightPosition === false) {
+                        return -1;
+                    }
+
+                    return $leftPosition <=> $rightPosition;
+                }
+
+                return strcasecmp($left->title, $right->title);
+            })
+            ->values();
     }
 
     /**

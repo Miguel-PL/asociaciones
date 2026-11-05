@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\SiteSetting;
 use App\Sites\Site;
 use App\Sites\SiteManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -92,6 +93,46 @@ class PublicSiteTest extends TestCase
         $this->visitar('miradas-violetas', '/')->assertSee('Miradas Violetas');
     }
 
+    public function test_footer_uses_site_settings_and_hides_social_networks_without_a_url(): void
+    {
+        SiteSetting::create([
+            'site_id' => 'caudete-se-mueve',
+            'footer_title' => 'Estamos en Caudete',
+            'address' => 'Calle Mayor, 12',
+            'email' => 'contacto@caudete.test',
+            'phone' => '+34 600 111 222',
+            'facebook_url' => null,
+            'instagram_url' => 'https://instagram.com/caudete',
+            'x_url' => null,
+        ]);
+        SiteSetting::create([
+            'site_id' => 'miradas-violetas',
+            'footer_title' => 'Contacta con Miradas',
+            'address' => 'Avenida Violeta, 5',
+            'email' => 'hola@miradas.test',
+            'phone' => null,
+            'facebook_url' => 'https://facebook.com/miradas',
+            'instagram_url' => null,
+            'x_url' => 'https://x.com/miradas',
+        ]);
+
+        $this->visitar('caudete-se-mueve', '/')
+            ->assertOk()
+            ->assertSee('Calle Mayor, 12')
+            ->assertSee('contacto@caudete.test')
+            ->assertSee('Instagram')
+            ->assertDontSee('Facebook')
+            ->assertDontSee('>X<', false);
+
+        $this->visitar('miradas-violetas', '/')
+            ->assertOk()
+            ->assertSee('Contacta con Miradas')
+            ->assertSee('Avenida Violeta, 5')
+            ->assertSee('Facebook')
+            ->assertSee('X')
+            ->assertDontSee('Instagram');
+    }
+
     public function test_the_home_page_shows_the_published_news(): void
     {
         $this->activar('caudete-se-mueve');
@@ -135,6 +176,21 @@ class PublicSiteTest extends TestCase
             ->assertOk()
             ->assertSee('Detalle de prueba')
             ->assertSee('Cuerpo de la noticia.');
+    }
+
+    public function test_a_news_detail_renders_rich_editor_html_and_sanitizes_unsafe_tags(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $post = $this->noticia('Mercadillo solidario', [
+            'body' => '<p>Ven y colaborá comprando en nuestro mercadillo.<br></p><script>alert(1)</script>',
+        ]);
+
+        $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+            ->assertOk()
+            ->assertSee('<p>Ven y colaborá comprando en nuestro mercadillo.', false)
+            ->assertDontSee('&lt;p&gt;Ven y colaborá', false)
+            ->assertDontSee('<script', false)
+            ->assertDontSee('alert(1)');
     }
 
     public function test_an_unpublished_news_is_not_reachable(): void

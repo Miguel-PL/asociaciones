@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Auth\Login;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
+use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Post;
@@ -13,8 +14,10 @@ use App\Sites\SiteManager;
 use Database\Seeders\AdminUserSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -304,6 +307,48 @@ class PanelSiteIsolationTest extends TestCase
             ->assertDontSee('Miradas Violetas');
     }
 
+    public function test_each_panel_exposes_its_own_association_settings_page(): void
+    {
+        foreach ([
+            ['site' => 'caudete-se-mueve', 'user' => $this->caudete],
+            ['site' => 'miradas-violetas', 'user' => $this->miradas],
+        ] as $panelData) {
+            $response = $this->verComo($panelData['user'], "/{$panelData['site']}/admin/association-settings");
+
+            $response
+                ->assertOk()
+                ->assertSee('Datos de la asociación')
+                ->assertSee('Facebook');
+
+            preg_match_all(
+                '/class="fi-sidebar-item-label"[^>]*>\s*(.*?)\s*<\/span>/s',
+                $response->getContent(),
+                $sidebarLabels,
+            );
+            $renderedLabels = array_map(
+                fn (string $label): string => trim((string) preg_replace('/<!--.*?-->/s', '', $label)),
+                $sidebarLabels[1],
+            );
+            $this->assertContains(
+                'Datos',
+                $renderedLabels,
+                'Sidebar labels: '.json_encode($renderedLabels),
+            );
+
+            $panel = Filament::getPanel($panelData['site']);
+            Filament::setCurrentPanel($panel);
+
+            $contentGroup = collect($panel->getNavigation())
+                ->first(fn ($group): bool => $group->getLabel() === 'Contenido');
+
+            $this->assertNotNull($contentGroup);
+            $this->assertSame(
+                ['Noticias', 'Páginas', 'Categorías', 'Datos'],
+                collect($contentGroup->getItems())->map(fn ($item): string => $item->getLabel())->all(),
+            );
+        }
+    }
+
     public function test_two_sites_can_hold_content_with_the_same_title(): void
     {
         $this->activar('caudete-se-mueve');
@@ -370,6 +415,29 @@ class PanelSiteIsolationTest extends TestCase
             'name' => 'Huerto comunitario',
             'site_id' => 'caudete-se-mueve',
         ]);
+    }
+
+    public function test_an_existing_post_can_be_saved_with_a_new_public_cover_and_blank_slug(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $post = Post::create(['title' => 'Fiesta de otoño en la plaza']);
+        $this->actingAs($this->caudete);
+        Filament::setCurrentPanel(Filament::getPanel('caudete-se-mueve'));
+        Storage::fake('public');
+
+        Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
+            ->fillForm([
+                'title' => 'Mercadillo solidario',
+                'slug' => '',
+                'cover_image' => UploadedFile::fake()->image('portada.jpg'),
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $post->refresh();
+        $this->assertSame('mercadillo-solidario', $post->slug);
+        $this->assertNotEmpty($post->cover_image);
+        Storage::disk('public')->assertExists($post->cover_image);
     }
 
     public function test_a_user_cannot_edit_the_content_of_another_site(): void

@@ -15,7 +15,7 @@ class HomeController extends SiteController
     /**
      * Noticias que aparecen destacadas en la portada.
      */
-    protected const HIGHLIGHTS = 3;
+    protected const HIGHLIGHTS = 4;
 
     public function __invoke(SiteManager $sites): View
     {

@@ -108,6 +108,25 @@ class SiteContentIsolationTest extends TestCase
         $this->assertSame('mi-slug-a-medida', $post->slug);
     }
 
+    public function test_it_generates_a_slug_when_an_existing_post_is_saved_with_a_blank_slug(): void
+    {
+        $this->activate('caudete-se-mueve');
+
+        $post = Post::create([
+            'title' => 'Fiesta de otoño en la plaza',
+            'slug' => 'fiesta-otono-en-la-plaza',
+        ]);
+
+        $post->update([
+            'title' => 'Mercadillo solidario',
+            'slug' => null,
+            'cover_image' => 'portadas/portada.jpg',
+        ]);
+
+        $this->assertSame('mercadillo-solidario', $post->fresh()->slug);
+        $this->assertSame('portadas/portada.jpg', $post->fresh()->cover_image);
+    }
+
     public function test_it_does_not_apply_the_filter_without_an_active_site(): void
     {
         $this->activate('caudete-se-mueve');

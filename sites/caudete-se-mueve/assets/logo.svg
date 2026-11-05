@@ -1,10 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" role="img" aria-label="Caudete Se Mueve">
-    <rect width="200" height="60" fill="none"/>
-    <g fill="none" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round">
-        <circle cx="22" cy="30" r="12"/>
-        <path d="M34 30h12"/>
-        <path d="M46 22l10 8-10 8z" fill="#1d4ed8" stroke="none"/>
-    </g>
-    <text x="70" y="26" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#1d4ed8">Caudete</text>
-    <text x="70" y="45" font-family="system-ui, sans-serif" font-size="17" font-weight="400" fill="#0f766e">Se Mueve</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 904 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Caudete Se Mueve — diez años</title>
+  <desc id="desc">Logotipo de Plataforma Ciudadana Caudete Se Mueve, décimo aniversario, con tres figuras humanas verdes y negras y el lema Diez años moviéndonos por la dignidad humana.</desc>
+  <defs>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8acb25"/><stop offset=".52" stop-color="#269522"/><stop offset="1" stop-color="#075b27"/></linearGradient>
+    <linearGradient id="greenDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#399b24"/><stop offset="1" stop-color="#075b27"/></linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2=".9" y2="1"><stop offset="0" stop-color="#8bcf28"/><stop offset="1" stop-color="#176b2c"/></linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#142526"/><stop offset="1" stop-color="#07191b"/></linearGradient>
+    <path id="topArc" d="M 262,250 A 190,190 0 0 1 642,250"/>
+  </defs>
+  <!-- Aniversario -->
+  <text fill="#176b2c" font-family="DejaVu Sans, Arial, sans-serif" font-size="48" font-weight="700" letter-spacing="3"><textPath href="#topArc" xlink:href="#topArc" startOffset="50%" text-anchor="middle">10 AÑOS</textPath></text>
+  <!-- Arco exterior abierto -->
+  <path d="M251 111 C190 170 162 247 164 330 C165 399 194 458 246 506" fill="none" stroke="url(#greenDark)" stroke-width="11" stroke-linecap="butt"/>
+  <path d="M653 111 C714 170 742 247 740 330 C739 399 710 458 658 506" fill="none" stroke="url(#greenDark)" stroke-width="11" stroke-linecap="butt"/>
+  <!-- Hojas inferiores -->
+  <path d="M430 520 C342 500 246 454 207 344 C303 370 385 421 430 520Z" fill="url(#leaf)"/>
+  <path d="M474 520 C562 500 658 454 697 344 C601 370 519 421 474 520Z" fill="url(#leaf)"/>
+  <!-- Figura izquierda -->
+  <circle cx="293" cy="257" r="41" fill="url(#ink)"/>
+  <path d="M207 284 C231 300 261 316 292 312 C324 308 345 282 358 270 C368 261 369 275 367 293 C363 353 397 421 421 514 C374 451 323 410 265 378 C231 359 210 332 201 297 C198 286 201 280 207 284Z" fill="url(#ink)"/>
+  <!-- Figura derecha -->
+  <circle cx="611" cy="257" r="41" fill="url(#ink)"/>
+  <path d="M697 284 C673 300 643 316 612 312 C580 308 559 282 546 270 C536 261 535 275 537 293 C541 353 507 421 483 514 C530 451 581 410 639 378 C673 359 694 332 703 297 C706 286 703 280 697 284Z" fill="url(#ink)"/>
+  <!-- Figura central -->
+  <circle cx="452" cy="177" r="46" fill="url(#green)"/>
+  <path d="M321 151 C350 178 384 236 414 241 C438 246 466 246 490 241 C520 236 554 178 583 151 C591 144 599 151 594 162 C572 208 539 252 514 293 C489 333 473 405 458 516 C454 531 450 531 446 516 C431 405 415 333 390 293 C365 252 332 208 310 162 C305 151 313 144 321 151Z" fill="url(#green)"/>
+  <!-- Nombre de la plataforma -->
+  <text x="452" y="579" text-anchor="middle" fill="#102326" font-family="DejaVu Sans, Arial, sans-serif" font-size="43" font-weight="400" letter-spacing="7">PLATAFORMA CIUDADANA</text>
+  <path d="M65 598 H839" stroke="#278c2c" stroke-width="7"/>
+  <text x="452" y="744" text-anchor="middle" fill="#101f21" font-family="DejaVu Sans, Arial, sans-serif" font-size="151" font-weight="900" letter-spacing="-5">CAUDETE</text>
+  <text x="452" y="869" text-anchor="middle" fill="url(#green)" font-family="DejaVu Sans, Arial, sans-serif" font-size="143" font-weight="900" letter-spacing="-6">SE MUEVE</text>
+  <text x="452" y="934" text-anchor="middle" fill="#102326" font-family="DejaVu Sans, Arial, sans-serif" font-size="39" font-weight="400" letter-spacing="6">DIEZ AÑOS MOVIÉNDONOS</text>
+  <text x="452" y="980" text-anchor="middle" fill="#102326" font-family="DejaVu Sans, Arial, sans-serif" font-size="39" font-weight="400" letter-spacing="5">POR LA DIGNIDAD HUMANA</text>
 </svg>

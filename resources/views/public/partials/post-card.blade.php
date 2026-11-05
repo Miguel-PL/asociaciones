@@ -1,31 +1,21 @@
-{{--
-    Tarjeta de noticia, reutilizada en portada, listado, categoría y detalle.
-
-    Espera una noticia ya cargada; $category solo se usa si viene informado.
---}}
-<article class="group relative flex flex-col gap-2 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md">
-    @if ($post->category)
-        <p class="text-xs font-semibold tracking-wide text-primary uppercase">
-            <a href="{{ route('categories.show', $post->category) }}"
-               class="after:absolute after:inset-0">{{ $post->category->name }}</a>
-        </p>
-    @endif
-
-    <h3 class="text-lg leading-snug font-semibold text-stone-900">
-        <a href="{{ route('posts.show', $post) }}" class="after:absolute after:inset-0">
-            {{ $post->title }}
-        </a>
-    </h3>
-
-    @if ($post->excerpt)
-        <p class="text-stone-600">{{ $post->excerpt }}</p>
-    @endif
-
-    @if ($post->published_at)
-        <p class="mt-auto pt-2 text-sm text-stone-500">
-            <time datetime="{{ $post->published_at->toDateString() }}">
-                {{ $post->published_at->translatedFormat('d \d\e F \d\e Y') }}
-            </time>
-        </p>
-    @endif
+{{-- Tarjeta editorial compartida por portada, listado, categoría y noticias relacionadas. --}}
+<article class="post-card">
+    <a class="post-card-link" href="{{ route('posts.show', $post) }}" aria-label="Leer: {{ $post->title }}" title="{{ $post->title }}{{ $post->excerpt ? ' — '.$post->excerpt : '' }}">
+        <div class="post-card-image">
+            @if ($post->cover_image_url)
+                <img src="{{ $post->cover_image_url }}" alt="" loading="lazy">
+            @else
+                <div class="post-image-placeholder" aria-hidden="true"><span>CSM</span><i></i></div>
+            @endif
+        </div>
+        <div class="post-card-copy">
+            <div class="post-card-meta">
+                @if ($post->category)<span class="post-category">{{ $post->category->name }}</span>@endif
+                @if ($post->published_at)<time datetime="{{ $post->published_at->toDateString() }}">{{ $post->published_at->translatedFormat('d M Y') }}</time>@endif
+            </div>
+            <h3>{{ $post->title }}</h3>
+            @if ($post->excerpt)<p class="post-excerpt">{{ $post->excerpt }}</p>@endif
+            <span class="post-read">Leer noticia</span>
+        </div>
+    </a>
 </article>

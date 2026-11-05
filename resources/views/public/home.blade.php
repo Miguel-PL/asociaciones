@@ -4,51 +4,46 @@
 @section('meta_description', $site->description)
 
 @section('content')
-    <section class="rounded-2xl bg-white p-8 shadow-sm sm:p-10">
-        <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">{{ $site->name }}</h1>
-
-        @if ($site->tagline)
-            <p class="mt-2 text-lg text-stone-600">{{ $site->tagline }}</p>
-        @endif
-
-        @if ($site->description)
-            <p class="mt-4 max-w-prose text-stone-700">{{ $site->description }}</p>
-        @endif
-
-        <div class="mt-6 flex flex-wrap gap-3">
-            <a href="{{ route('posts.index') }}"
-               class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark">
-                Ver noticias
-            </a>
-
-            @foreach ($navPages as $page)
-                <a href="{{ route('pages.show', $page) }}"
-                   class="rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-stone-400">
-                    {{ $page->title }}
-                </a>
-            @endforeach
+    <section class="home-hero" aria-labelledby="home-title">
+        <div class="home-hero-copy">
+            <p class="eyebrow"><span></span> Plataforma ciudadana · Caudete</p>
+            <h1 id="home-title">Una comunidad<br>que <em>se mueve</em>.</h1>
+            <p class="home-hero-description">{{ $site->description }}</p>
+            <div class="home-hero-actions">
+                <a class="button button-dark" href="{{ route('posts.index') }}">Descubre lo que hacemos</a>
+                @foreach ($navPages->take(1) as $page)
+                    <a class="text-link" href="{{ route('pages.show', $page) }}">{{ $page->title }}</a>
+                @endforeach
+            </div>
+            <div class="home-hero-note"><span class="note-mark" aria-hidden="true">10</span><span><strong>Diez años moviéndonos</strong><br>por la dignidad humana</span></div>
         </div>
+        <div class="home-hero-art" role="img" aria-label="Logotipo del décimo aniversario de Caudete Se Mueve">
+            <div class="hero-art-ring"></div>
+            <div class="hero-art-disc"><img src="{{ $site->asset($site->logo) }}" alt=""></div>
+        </div>
+        <a class="hero-scroll" href="#actualidad"><span></span> Sigue explorando</a>
     </section>
 
-    <section class="mt-12">
-        <div class="flex items-baseline justify-between gap-4">
-            <h2 class="text-2xl font-bold tracking-tight text-stone-900">Últimas noticias</h2>
-
-            @if ($posts->isNotEmpty())
-                <a href="{{ route('posts.index') }}" class="link text-sm">Ver todas</a>
-            @endif
+    <section class="news-section" id="actualidad" aria-labelledby="news-title">
+        <div class="section-heading">
+            <div><p class="eyebrow">Lo que pasa, lo que nos mueve</p><h2 id="news-title">Actualidad <span>de la asociación.</span></h2></div>
+            @if ($posts->isNotEmpty())<a class="text-link" href="{{ route('posts.index') }}">Todas las noticias</a>@endif
         </div>
 
         @if ($posts->isEmpty())
-            <p class="mt-6 rounded-xl border border-dashed border-stone-300 p-8 text-center text-stone-500">
-                Todavía no hay noticias publicadas.
-            </p>
+            <div class="empty-state"><p class="eyebrow">Pronto, más noticias</p><p>Todavía no hay noticias publicadas. Vuelve pronto para conocer la actualidad de Caudete Se Mueve.</p></div>
         @else
-            <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="news-grid">
                 @foreach ($posts as $post)
                     @include('public.partials.post-card', ['post' => $post])
                 @endforeach
             </div>
         @endif
+    </section>
+
+    <section class="participation-band">
+        <div class="participation-symbol" aria-hidden="true">✳</div>
+        <div><p class="eyebrow">Las cosas cambian cuando nos implicamos</p><h2>Un mundo mejor lo <br>hacemos entre<br><em>todas y todos.</em></h2></div>
+        <div class="participation-action"><p>Ideas, encuentros y un mundo más justo empiezan por participar.</p>@foreach ($navPages->take(1) as $page)<a class="button button-light" href="{{ route('pages.show', $page) }}">{{ $page->title }}</a>@endforeach</div>
     </section>
 @endsection

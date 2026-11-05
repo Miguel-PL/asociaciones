@@ -79,82 +79,94 @@
         <link rel="stylesheet" href="{{ $site->asset('site.css') }}">
     @endif
 </head>
-<body class="flex min-h-screen flex-col">
+<body class="flex min-h-screen flex-col site-{{ $site->slug }}">
 <a href="#contenido" class="sr-only focus:not-sr-only">Saltar al contenido</a>
 
-<header class="border-b border-stone-200 bg-white">
-    <div class="container-site flex flex-wrap items-center justify-between gap-4 py-4">
-        <a href="{{ route('home') }}" class="flex items-center gap-3">
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{{ route('home') }}" class="site-brand" aria-label="{{ $site->name }} — Inicio">
             @if ($site->asset($site->logo))
-                <img src="{{ $site->asset($site->logo) }}" alt="" class="h-10 w-auto">
+                <img src="{{ $site->asset($site->logo) }}" alt="" class="site-brand-logo">
             @endif
             <span>
-                <span class="block text-lg leading-tight font-semibold text-stone-900">{{ $site->name }}</span>
+                <span class="site-brand-name">{{ $site->name }}</span>
                 @if ($site->tagline)
-                    <span class="block text-sm text-stone-500">{{ $site->tagline }}</span>
+                    <span class="site-brand-tagline">{{ $site->tagline }}</span>
                 @endif
             </span>
         </a>
 
-        <nav aria-label="Principal" class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium">
+        <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Abrir menú">
+            <span></span><span></span>
+        </button>
+        <nav id="site-navigation" aria-label="Principal" class="site-navigation">
             <a href="{{ route('home') }}"
-               @class(['text-stone-900', 'link' => ! request()->routeIs('home')])>Inicio</a>
+               @class(['is-active' => request()->routeIs('home')])>Inicio</a>
             <a href="{{ route('posts.index') }}"
-               @class(['text-stone-900', 'link' => ! request()->routeIs('posts.*')])>Noticias</a>
+               @class(['is-active' => request()->routeIs('posts.*')])>Noticias</a>
             @foreach ($navPages as $page)
                 <a href="{{ route('pages.show', $page) }}"
-                   @class(['text-stone-900', 'link' => ! request()->routeIs('pages.show', $page)])>{{ $page->title }}</a>
+                   @class(['is-active' => request()->routeIs('pages.show', $page)])>{{ $page->title }}</a>
             @endforeach
         </nav>
     </div>
 </header>
 
-<main id="contenido" class="flex-1 py-10">
-    <div class="container-site">
+<main id="contenido" class="site-main flex-1">
+    <div class="site-main-inner">
         @yield('content')
     </div>
 </main>
 
-<footer class="border-t border-stone-200 bg-white py-8 text-sm text-stone-600">
-    <div class="container-site flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div class="space-y-1">
-            <p class="font-medium text-stone-900">{{ $site->name }}</p>
-            @if ($site->contact['address'] ?? null)
-                <p>{{ $site->contact['address'] }}</p>
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <div class="site-footer-intro">
+            @if ($site->asset($site->logo))
+                <img src="{{ $site->asset($site->logo) }}" alt="" class="site-footer-logo">
             @endif
-            @if ($site->contact['email'] ?? null)
-                <p><a class="link" href="mailto:{{ $site->contact['email'] }}">{{ $site->contact['email'] }}</a></p>
+            <p class="site-footer-name">{{ $site->name }}</p>
+            @if ($site->tagline)<p class="site-footer-tagline">{{ $site->tagline }}</p>@endif
+        </div>
+        <div class="site-footer-contact">
+            <p class="site-footer-label">{{ $footerContact['title'] }}</p>
+            @if ($footerContact['address'] ?? null)
+                <p>{{ $footerContact['address'] }}</p>
             @endif
-            @if ($site->contact['phone'] ?? null)
-                <p>{{ $site->contact['phone'] }}</p>
+            @if ($footerContact['email'] ?? null)
+                <p><a class="link" href="mailto:{{ $footerContact['email'] }}">{{ $footerContact['email'] }}</a></p>
+            @endif
+            @if ($footerContact['phone'] ?? null)
+                <p><a href="tel:{{ preg_replace('/[^0-9+]/', '', $footerContact['phone']) }}">{{ $footerContact['phone'] }}</a></p>
             @endif
         </div>
 
-        <div class="space-y-1">
-            <div class="flex flex-wrap gap-x-4 gap-y-1">
-                <a class="link" href="{{ route('posts.index') }}">Noticias</a>
+        <div class="site-footer-links">
+            <p class="site-footer-label">Explora</p>
+            <div class="site-footer-link-list">
+                <a href="{{ route('posts.index') }}">Noticias</a>
                 @foreach ($navPages as $page)
-                    <a class="link" href="{{ route('pages.show', $page) }}">{{ $page->title }}</a>
+                    <a href="{{ route('pages.show', $page) }}">{{ $page->title }}</a>
                 @endforeach
             </div>
 
             @if ($socialLinks)
-                <div class="flex flex-wrap gap-x-4 gap-y-1">
+                <div class="site-footer-link-list site-social-links">
                     @foreach ($socialLinks as $network => $url)
-                        <a class="link" href="{{ $url }}" rel="noopener">{{ ucfirst($network) }}</a>
+                        <a href="{{ $url }}" rel="noopener">{{ ucfirst($network) }}</a>
                     @endforeach
                 </div>
             @endif
 
             @if ($legalLinks)
-                <div class="flex flex-wrap gap-x-4 gap-y-1">
+                <div class="site-footer-link-list site-legal-links">
                     @foreach ($legalLinks as $label => $url)
-                        <a class="link" href="{{ $url }}">{{ $label }}</a>
+                        <a href="{{ $url }}">{{ $label }}</a>
                     @endforeach
                 </div>
             @endif
         </div>
     </div>
+    <div class="site-footer-bottom"><span>Comunidad, participación y dignidad humana.</span><span>Caudete · Albacete</span></div>
 </footer>
 </body>
 </html>

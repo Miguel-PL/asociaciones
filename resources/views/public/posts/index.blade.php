@@ -4,14 +4,14 @@
 @section('meta_description', 'Noticias publicadas por '.$site->name)
 
 @section('content')
-    <h1 class="text-3xl font-bold tracking-tight text-stone-900">Noticias</h1>
+    <header class="page-heading"><p class="eyebrow">Caudete en movimiento</p><h1>Noticias y actualidad.</h1><p>Historias, propuestas y actividades de nuestra asociación.</p></header>
 
     @if ($posts->isEmpty())
-        <p class="mt-6 rounded-xl border border-dashed border-stone-300 p-8 text-center text-stone-500">
+        <p class="empty-state mt-6">
             Todavía no hay noticias publicadas.
         </p>
     @else
-        <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="listing-grid mt-8">
             @foreach ($posts as $post)
                 @include('public.partials.post-card', ['post' => $post])
             @endforeach

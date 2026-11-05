@@ -4,12 +4,12 @@ return [
 
     'name' => 'Caudete Se Mueve',
 
-    'tagline' => 'La asociación vecinal que mueve Caudete',
+    'tagline' => 'La asociación vecinal de Caudete',
 
     'admin_email' => 'caudete@asociaciones.test',
 
     'description' => 'Caudete Se Mueve es la asociación vecinal de Caudete. '.
-        'Trabajamos por el barrio con actividades, propuestas y participación.',
+        'Trabajamos por el mundo con actividades, propuestas y participación.',
 
     /*
     | Dominios que sirven este sitio. El primero es el principal.
@@ -22,9 +22,10 @@ return [
     ],
 
     'colors' => [
-        'primary' => '#1d4ed8',
-        'secondary' => '#0f766e',
-        'accent' => '#f59e0b',
+        'primary' => '#176b2c',
+        'primary-dark' => '#104d22',
+        'secondary' => '#58a63c',
+        'accent' => '#a8cf62',
     ],
 
     'logo' => 'assets/logo.svg',
@@ -46,7 +47,7 @@ return [
     'social' => [
         'facebook' => 'https://facebook.com/',
         'instagram' => 'https://instagram.com/',
-        'twitter' => 'https://twitter.com/',
+        'x' => 'https://x.com/',
     ],
 
     /*
