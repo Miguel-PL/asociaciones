@@ -4,7 +4,10 @@
 @section('meta_description', $post->excerpt ?? $site->description)
 
 @section('og_type', 'article')
-@section('og_image', $post->cover_image_url)
+@php($coverImageUrl = $post->cover_image_url)
+@if ($coverImageUrl)
+    @section('og_image', $coverImageUrl)
+@endif
 @section('og_published_time', $post->published_at?->toAtomString())
 
 @section('content')

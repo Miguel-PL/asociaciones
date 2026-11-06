@@ -147,7 +147,9 @@ class Site implements Arrayable
             return null;
         }
 
-        return asset("sites/{$this->slug}/assets/{$relative}");
+        $urlRelative = str_replace(DIRECTORY_SEPARATOR, '/', $relative);
+
+        return asset("sites/{$this->slug}/assets/{$urlRelative}");
     }
 
     /**

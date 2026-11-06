@@ -54,7 +54,13 @@ class Post extends Model
             return null;
         }
 
-        return url(Storage::disk('public')->url($this->cover_image));
+        $disk = Storage::disk('public');
+
+        if ($disk->exists($this->cover_image)) {
+            return url($disk->url($this->cover_image));
+        }
+
+        return $this->site()?->asset($this->cover_image);
     }
 
     /**

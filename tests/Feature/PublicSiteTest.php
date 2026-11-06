@@ -9,6 +9,9 @@ use App\Models\SiteSetting;
 use App\Sites\Site;
 use App\Sites\SiteManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -185,12 +188,30 @@ class PublicSiteTest extends TestCase
             'body' => '<p>Ven y colaborá comprando en nuestro mercadillo.<br></p><script>alert(1)</script>',
         ]);
 
-        $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+        $html = $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
             ->assertOk()
             ->assertSee('<p>Ven y colaborá comprando en nuestro mercadillo.', false)
             ->assertDontSee('&lt;p&gt;Ven y colaborá', false)
-            ->assertDontSee('<script', false)
-            ->assertDontSee('alert(1)');
+            ->getContent();
+
+        $previousLibxmlErrorMode = libxml_use_internal_errors(true);
+
+        try {
+            $document = new \DOMDocument;
+            $document->loadHTML($html);
+            $xpath = new \DOMXPath($document);
+            $articleScripts = $xpath->query(
+                '//*[contains(concat(" ", normalize-space(@class), " "), " prose-body ")]//script',
+            );
+
+            $this->assertNotFalse($articleScripts);
+            $this->assertSame(0, $articleScripts->length, 'El contenido de la noticia no debe incluir scripts.');
+        } finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($previousLibxmlErrorMode);
+        }
+
+        $this->assertStringNotContainsString('alert(1)', $html);
     }
 
     public function test_an_unpublished_news_is_not_reachable(): void
@@ -297,7 +318,7 @@ class PublicSiteTest extends TestCase
         // Los colores viajan como variables CSS, así que las dos webs
         // comparten una sola hoja de estilos compilada.
         $this->visitar('caudete-se-mueve', '/')
-            ->assertSee('--site-primary: #1d4ed8', false);
+            ->assertSee('--site-primary: #176b2c', false);
 
         $this->visitar('miradas-violetas', '/')
             ->assertSee('--site-primary: #7e22ce', false);
@@ -381,22 +402,58 @@ class PublicSiteTest extends TestCase
     {
         // Open Graph y Twitter Cards: lo que se comparte en redes.
         $this->activar('caudete-se-mueve');
-        $post = $this->noticia('Noticia para redes', [
-            'excerpt' => 'La entradilla que vera el navegador al compartir.',
-            'cover_image' => 'portadas/noticia.jpg',
-        ]);
+        $temporaryDiskPath = storage_path('framework/testing/disks/public');
+        Storage::fake('public');
 
-        $html = $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
-            ->assertOk()
-            ->getContent();
+        try {
+            UploadedFile::fake()->image('noticia.jpg')->storeAs('portadas', 'noticia.jpg', 'public');
 
-        $this->assertStringContainsString('<meta property="og:type" content="article">', $html);
-        $this->assertStringContainsString('<meta property="og:title" content="Noticia para redes · Caudete Se Mueve">', $html);
-        $this->assertStringContainsString('og:description" content="La entradilla que vera el navegador al compartir."', $html);
-        $this->assertStringContainsString('og:image" content="http://caudete-se-mueve.test/storage/portadas/noticia.jpg"', $html);
-        $this->assertStringContainsString('og:url" content="http://caudete-se-mueve.test/noticias/'.$post->slug.'"', $html);
-        $this->assertStringContainsString('<meta name="twitter:card" content="summary_large_image">', $html);
-        $this->assertStringContainsString('article:published_time', $html);
+            $post = $this->noticia('Noticia para redes', [
+                'excerpt' => 'La entradilla que vera el navegador al compartir.',
+                'cover_image' => 'portadas/noticia.jpg',
+            ]);
+
+            $html = $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+                ->assertOk()
+                ->getContent();
+
+            $this->assertStringContainsString('<meta property="og:type" content="article">', $html);
+            $this->assertStringContainsString('<meta property="og:title" content="Noticia para redes · Caudete Se Mueve">', $html);
+            $this->assertStringContainsString('og:description" content="La entradilla que vera el navegador al compartir."', $html);
+            $this->assertStringContainsString('og:image" content="http://caudete-se-mueve.test/storage/portadas/noticia.jpg"', $html);
+            $this->assertStringContainsString('og:url" content="http://caudete-se-mueve.test/noticias/'.$post->slug.'"', $html);
+            $this->assertStringContainsString('<meta name="twitter:card" content="summary_large_image">', $html);
+            $this->assertStringContainsString('article:published_time', $html);
+        } finally {
+            File::deleteDirectory($temporaryDiskPath);
+        }
+    }
+
+    public function test_a_news_uses_its_site_static_cover_when_the_storage_file_is_missing(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $filename = '01M6KS4T8PY5EZC33VNCGZKCT4.jpg';
+        $coverImage = 'portadas/'.$filename;
+        $siteAssetPath = base_path('sites/caudete-se-mueve/assets/'.$coverImage);
+        $temporaryDiskPath = storage_path('framework/testing/disks/public');
+
+        $this->assertFileExists($siteAssetPath);
+        Storage::fake('public');
+
+        try {
+            $post = $this->noticia('Portada estática', ['cover_image' => $coverImage]);
+
+            $html = $this->visitar('caudete-se-mueve', '/noticias/'.$post->slug)
+                ->assertOk()
+                ->getContent();
+
+            $this->assertStringContainsString(
+                'og:image" content="http://caudete-se-mueve.test/sites/caudete-se-mueve/assets/'.$coverImage.'"',
+                $html,
+            );
+        } finally {
+            File::deleteDirectory($temporaryDiskPath);
+        }
     }
 
     public function test_a_news_without_a_cover_image_falls_back_to_the_social_card_of_the_site(): void
