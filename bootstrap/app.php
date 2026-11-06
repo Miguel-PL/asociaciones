@@ -23,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../app/Sites/Commands',
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        if (env('APP_ENV') === 'production') {
+            $middleware->trustProxies(at: '*');
+        }
+
         $middleware->web(append: [
             IdentifySite::class,
         ]);
