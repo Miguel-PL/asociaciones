@@ -7,6 +7,86 @@
     $isCaudeteAboutPage = $site->slug === 'caudete-se-mueve'
         && $page->slug === 'quienes-somos'
         && trim((string) $page->body) === "Somos una asociación vecinal abierta a todo el barrio.\n\nExistimos para conocer los problemas concretos del entorno y para abrir canales de participación real, no solo consultiva.";
+
+    $isCaudeteWorkPage = $site->slug === 'caudete-se-mueve'
+        && $page->slug === 'que-hacemos';
+
+    $workAreas = [
+        [
+            'number' => '01',
+            'title' => 'Ayuda Humanitaria y Cooperación Internacional',
+            'intro' => 'Llevamos la solidaridad de nuestro municipio a los lugares más golpeados por las crisis humanitarias y los conflictos bélicos.',
+            'image' => 'que-hacemos/caudete-carga-ayuda-humanitaria.jpg',
+            'alt' => 'Voluntariado carga material de ayuda humanitaria en un camión.',
+            'caption' => 'Preparación y envío de ayuda humanitaria.',
+            'activities' => [
+                ['title' => 'Gestión y envío de contenedores:', 'description' => 'Centralizamos la recogida, clasificación, triaje y paletizado técnico de material de primera necesidad (ropa técnica, calzado, productos de higiene) para su envío a campos de personas refugiadas en Europa.'],
+                ['title' => 'Apoyo a personas en tránsito:', 'description' => 'Colaboramos en redes de soporte logístico de emergencia y campañas de ropa de abrigo orientadas a dar auxilio a las personas migrantes en las fronteras y rutas migratorias europeas.'],
+                ['title' => 'Logística de refugio de emergencia:', 'description' => 'Coordinamos el aprovisionamiento de tiendas de campaña, mantas y material de cobijo para asentamientos vulnerables y puntos calientes de asistencia humanitaria.'],
+            ],
+        ],
+        [
+            'number' => '02',
+            'title' => 'Acción Social y Red de Distribución Local',
+            'intro' => 'Ninguna crisis nos es ajena. Trabajamos estrechamente con el tejido asociativo de nuestro municipio para mitigar la vulnerabilidad en nuestro entorno más cercano.',
+            'image' => 'que-hacemos/caudete-grupo-con-donacion.jpg',
+            'alt' => 'Vecinas y voluntariado junto a una donación recogida en Caudete.',
+            'caption' => 'Redes vecinales de recogida y apoyo local.',
+            'activities' => [
+                ['title' => 'Logística de alimentos de urgencia:', 'description' => 'Recepcionamos y gestionamos partidas de alimentos, priorizando los artículos con fechas de caducidad temprana para activar redes de reparto rápido e inmediato hacia las familias de Caudete que más lo necesitan.'],
+                ['title' => 'Aprovechamiento de excedentes:', 'description' => 'Coordinamos la recogida y distribución de excedentes agrícolas e industriales de empresas locales para su canalización urgente a través de entidades benéficas del municipio, evitando el desperdicio y garantizando el derecho a la alimentación.'],
+            ],
+        ],
+        [
+            'number' => '03',
+            'title' => 'Movilidad Solidaria y Economía Circular',
+            'intro' => 'Creemos en una solidaridad sostenible que proteja el medioambiente a la vez que dota de autonomía a las personas.',
+            'placeholder' => 'bicycle',
+            'placeholder_label' => 'Fotografía pendiente: taller solidario de bicicletas.',
+            'placeholder_caption' => 'Taller solidario de bicicletas',
+            'activities' => [
+                ['title' => 'Taller solidario de bicicletas:', 'description' => 'Recogemos bicicletas donadas por la ciudadanía y colectivos de la comarca para proceder a su completa reparación técnica y puesta a punto.'],
+                ['title' => 'Autonomía para colectivos vulnerables:', 'description' => 'Entregamos estas bicicletas a trabajadores temporeros, personas migrantes en periodos formativos y colectivos vulnerables de la provincia, transformando el reciclaje material en una herramienta directa de transporte digno, inserción y libertad de movimiento.'],
+            ],
+        ],
+        [
+            'number' => '04',
+            'title' => 'Educación en Valores y Sensibilización Comunitaria',
+            'intro' => 'Para construir un futuro sin injusticias, es imprescindible formar y conmover a las generaciones del presente.',
+            'placeholder' => 'education',
+            'placeholder_label' => 'Fotografía pendiente: jornada educativa o taller escolar.',
+            'placeholder_caption' => 'Jornada educativa o taller escolar',
+            'activities' => [
+                ['title' => 'Jornadas y talleres escolares:', 'description' => 'Entramos en las aulas de los centros educativos de Caudete para realizar dinámicas pedagógicas, charlas de concienciación y recreaciones didácticas orientadas a acercar la realidad de los campos de refugiados a los más jóvenes.'],
+                ['title' => 'Implicación de la comunidad educativa:', 'description' => 'Involucramos activamente al alumnado, profesorado y familias en campañas de recogida escolar y en la preparación de la logística de los envíos humanitarios.'],
+                ['title' => 'Formación de educadores:', 'description' => 'Participamos en cursos formativos locales para transmitir los valores del asociacionismo formal, el voluntariado comunitario y la educación en valores a los futuros profesionales del ocio y el tiempo libre.'],
+            ],
+        ],
+        [
+            'number' => '05',
+            'title' => 'Movilizaciones por la Paz y los Derechos Humanos',
+            'intro' => 'La asistencia material no es suficiente si no señalamos las causas de la injusticia. Combinamos la ayuda humanitaria con el activismo político y social.',
+            'placeholder' => 'peace',
+            'placeholder_label' => 'Fotografía pendiente: concentración o movilización ciudadana por la paz.',
+            'placeholder_caption' => 'Concentración ciudadana por la paz',
+            'activities' => [
+                ['title' => 'Concentraciones ciudadanas:', 'description' => 'Convocamos movilizaciones públicas y pacíficas de manera regular en nuestro municipio para clamar por la paz, exigir el fin de los conflictos armados y denunciar los genocidios y las crisis internacionales.'],
+                ['title' => 'Espacios de debate y conferencias:', 'description' => 'Organizamos mesas asociativas comarcales, ponencias informativas y charlas abiertas al público para analizar las misiones de derechos humanos internacionales y buscar soluciones conjuntas.'],
+            ],
+        ],
+        [
+            'number' => '06',
+            'title' => 'Dinamización Cultural y Concienciación Social',
+            'intro' => 'Utilizamos la cultura y el encuentro comunitario como un puente derribar prejuicios, sembrar empatía y fomentar la convivencia.',
+            'placeholder' => 'culture',
+            'placeholder_label' => 'Fotografía pendiente: actividad cultural o evento solidario de convivencia.',
+            'placeholder_caption' => 'Actividad cultural o evento solidario',
+            'activities' => [
+                ['title' => 'Cultura social y comunitaria:', 'description' => 'Impulsamos y damos soporte técnico a representaciones teatrales, proyecciones de documentales y cinefórum protagonizados o enfocados en las vivencias de personas migrantes y refugiadas.'],
+                ['title' => 'Eventos solidarios de convivencia:', 'description' => 'Organizamos jornadas gastronómicas, mercadillos solidarios, eventos de ocio y ferias asociativas para recaudar fondos, visibilizar causas globales y estrechar los lazos vecinales en Caudete.'],
+            ],
+        ],
+    ];
 @endphp
 
 @section('content')
@@ -165,6 +245,83 @@
                             <p>Creemos que para cambiar el futuro hay que remover conciencias en el presente. Por ello, entramos en las escuelas, institutos y centros juveniles para educar a las nuevas generaciones en la empatía, el voluntariado y la cultura de la paz.</p>
                         </li>
                     </ul>
+                </div>
+            </section>
+        </article>
+    @elseif ($isCaudeteWorkPage)
+        <article class="work-page" aria-labelledby="work-title">
+            <section class="work-hero" aria-labelledby="work-title">
+                <div class="work-hero-copy">
+                    <p class="eyebrow work-eyebrow"><span></span> Solidaridad en acción</p>
+                    <h1 id="work-title">Qué hacemos</h1>
+                    <p class="work-intro">En Caudete Se Mueve canalizamos la energía solidaria de la ciudadanía a través de diversas áreas de intervención. Creemos que la transformación social requiere tanto de la acción material inmediata como de la denuncia pública y la educación a largo plazo. Nuestras principales líneas de trabajo son:</p>
+                </div>
+
+                @if ($image = $site->asset('que-hacemos/caudete-recogida-estufas-dana.webp'))
+                    <figure class="work-hero-media">
+                        <img src="{{ $image }}" alt="Voluntarias de Caudete Se Mueve entregan una estufa donada durante una recogida solidaria" fetchpriority="high">
+                        <figcaption>La solidaridad de Caudete se convierte en ayuda concreta.</figcaption>
+                    </figure>
+                @endif
+            </section>
+
+            <div class="work-areas" aria-label="Áreas de actuación">
+                @foreach ($workAreas as $area)
+                    <section class="work-area{{ $loop->even ? ' work-area--reverse' : '' }}" aria-labelledby="work-area-{{ $area['number'] }}-title">
+                        <figure class="work-media">
+                            @if ($image = $site->asset($area['image'] ?? null))
+                                <img src="{{ $image }}" alt="{{ $area['alt'] }}" loading="lazy">
+                                <figcaption>{{ $area['caption'] }}</figcaption>
+                            @else
+                                <div class="work-placeholder work-placeholder--{{ $area['placeholder'] }}" role="img" aria-label="{{ $area['placeholder_label'] }}">
+                                    <span class="work-placeholder-number" aria-hidden="true">{{ $area['number'] }}</span>
+                                    <span class="work-placeholder-icon" aria-hidden="true">
+                                        @switch($area['placeholder'])
+                                            @case('bicycle')
+                                                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="44" r="10"/><circle cx="49" cy="44" r="10"/><path d="m15 44 12-20 10 20H15l8-13h17l9 13M24 24h8m9 0h5"/></svg>
+                                                @break
+                                            @case('education')
+                                                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 24 26-13 26 13-26 13L6 24Z"/><path d="M17 30v15c9 7 23 7 32 0V30M58 24v17"/><path d="M58 41c-4 3-4 7 0 10 4-3 4-7 0-10Z"/></svg>
+                                                @break
+                                            @case('peace')
+                                                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 32c8-2 13-9 17-19 4 6 9 9 16 9 6 0 10-3 13-7-1 11-7 18-18 20l13 11c-8 1-15-2-21-8-6 5-13 7-21 5l10-8-9-3Z"/><path d="m27 20 7 10m-9 3 13-7"/></svg>
+                                                @break
+                                            @default
+                                                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18h19v28H8zM37 18h19v28H37z"/><path d="M13 24h9m-9 6h9m-9 6h9m20-12h9m-9 6h9m-9 6h9M4 52h56"/><circle cx="17.5" cy="49" r="4"/><circle cx="46.5" cy="49" r="4"/></svg>
+                                        @endswitch
+                                    </span>
+                                    <span class="work-placeholder-label">Fotografía pendiente</span>
+                                    <span class="work-placeholder-caption">{{ $area['placeholder_caption'] }}</span>
+                                </div>
+                            @endif
+                        </figure>
+
+                        <div class="work-area-copy">
+                            <p class="work-area-number"><span>{{ $area['number'] }}</span> <span aria-hidden="true">/ 06</span></p>
+                            <h2 id="work-area-{{ $area['number'] }}-title">{{ $area['title'] }}</h2>
+                            <p class="work-area-intro">{{ $area['intro'] }}</p>
+                            <div class="work-activities">
+                                @foreach ($area['activities'] as $activity)
+                                    <div class="work-activity">
+                                        <h3>{{ $activity['title'] }}</h3>
+                                        <p>{{ $activity['description'] }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </section>
+                @endforeach
+            </div>
+
+            <section class="work-invitation" aria-labelledby="work-invitation-title">
+                <span class="work-invitation-mark" aria-hidden="true">+</span>
+                <div class="work-invitation-copy">
+                    <p class="work-invitation-eyebrow">Participa</p>
+                    <h2 id="work-invitation-title">La solidaridad se construye entre todos.</h2>
+                </div>
+                <div class="work-invitation-action">
+                    <p>Consulta cómo colaborar con Caudete Se Mueve a través de su página de donaciones.</p>
+                    <a class="work-invitation-link" href="{{ route('pages.show', ['page' => 'donaciones']) }}">Ir a Donaciones <span aria-hidden="true">→</span></a>
                 </div>
             </section>
         </article>
