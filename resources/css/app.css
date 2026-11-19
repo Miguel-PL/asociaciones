@@ -321,3 +321,62 @@
 @media (prefers-reduced-motion: reduce) {
     .site-caudete *, .site-caudete *::before, .site-caudete *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* Presentación editorial de «Quiénes somos» de Caudete Se Mueve.
+   El body usa el slug completo del sitio, igual que estos selectores. */
+.site-caudete-se-mueve .about-page { padding-bottom: 0; }
+.site-caudete-se-mueve .about-hero { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); align-items: center; gap: clamp(2.5rem, 5vw, 5rem); width: min(calc(100% - 3rem), 1120px); margin: 0 auto; padding-bottom: clamp(4rem, 7vw, 6rem); }
+.site-caudete-se-mueve .about-hero-copy { max-width: 590px; }
+.site-caudete-se-mueve .about-hero h1 { margin-top: .8rem; color: #102326; font-size: clamp(3rem, 5.8vw, 5.25rem); font-weight: 780; letter-spacing: -.075em; line-height: .98; }
+.site-caudete-se-mueve .about-intro, .site-caudete-se-mueve .about-continuation { max-width: 58ch; color: #4e5b52; font-size: clamp(1rem, 1.25vw, 1.1rem); line-height: 1.75; }
+.site-caudete-se-mueve .about-intro { margin-top: 1.45rem; }
+.site-caudete-se-mueve .about-manifesto { display: inline-block; margin-top: 1rem; padding-left: 1rem; border-left: 4px solid var(--site-accent, #a8cf62); color: #102326; font-size: clamp(2.35rem, 4vw, 3.7rem); font-weight: 780; letter-spacing: -.065em; line-height: 1.05; }
+.site-caudete-se-mueve .about-manifesto span { color: var(--site-primary, #176b2c); }
+.site-caudete-se-mueve .about-continuation { margin-top: 1.15rem; }
+.site-caudete-se-mueve .about-hero-photo { width: 100%; max-width: 470px; margin: 0 auto; padding: .55rem; border: 1px solid #e0e8dc; border-radius: 1.15rem; background: #fff; box-shadow: 0 18px 45px #10232612; }
+.site-caudete-se-mueve .about-hero-photo img { display: block; width: 100%; aspect-ratio: 1.5 / 1; border-radius: .8rem; object-fit: cover; object-position: center; }
+.site-caudete-se-mueve .about-principles { padding: clamp(3.5rem, 6vw, 5.25rem) 1.5rem clamp(4rem, 7vw, 6rem); background: #edf3e9; }
+.site-caudete-se-mueve .about-principles-inner { width: min(100%, 1120px); margin: 0 auto; }
+.site-caudete-se-mueve .about-principles-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: clamp(1rem, 2.2vw, 1.5rem); }
+.site-caudete-se-mueve .about-principle { min-width: 0; padding: clamp(1.6rem, 3vw, 2.5rem); border: 1px solid #dce6d7; border-radius: .9rem; background: #fff; }
+.site-caudete-se-mueve .about-principle-vision { background: #f8faf6; }
+.site-caudete-se-mueve .about-card-heading { display: flex; min-width: 0; align-items: center; gap: 1rem; }
+.site-caudete-se-mueve .about-principle-icon { display: grid; flex: 0 0 2.9rem; width: 2.9rem; height: 2.9rem; place-items: center; border: 1px solid #d5e3cd; border-radius: 50%; background: #f2f7ef; color: var(--site-primary, #176b2c); }
+.site-caudete-se-mueve .about-principle-icon svg { width: 1.55rem; height: 1.55rem; }
+.site-caudete-se-mueve .about-principle h2 { margin-top: 0; color: #102326; font-size: clamp(1.6rem, 2.4vw, 2rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.15; }
+.site-caudete-se-mueve .about-principle p { max-width: none; margin-top: 1rem; color: #4d5a51; font-size: 1rem; line-height: 1.72; }
+
+@media (max-width: 820px) {
+    .site-caudete-se-mueve .about-hero { grid-template-columns: minmax(0, 1fr) minmax(280px, .82fr); gap: 2rem; width: min(calc(100% - 2.5rem), 740px); }
+}
+@media (max-width: 680px) {
+    .site-caudete-se-mueve .about-hero { grid-template-columns: 1fr; gap: 1.75rem; width: calc(100% - 2.5rem); padding-bottom: 3.5rem; }
+    .site-caudete-se-mueve .about-hero h1 { font-size: clamp(3rem, 13vw, 4.1rem); }
+    .site-caudete-se-mueve .about-intro, .site-caudete-se-mueve .about-continuation { font-size: 1rem; line-height: 1.7; }
+    .site-caudete-se-mueve .about-manifesto { font-size: clamp(2.4rem, 10vw, 3.3rem); }
+    .site-caudete-se-mueve .about-hero-photo { width: min(100%, 470px); }
+    .site-caudete-se-mueve .about-principles { padding: 3.25rem 1.25rem 3.75rem; }
+    .site-caudete-se-mueve .about-principles-grid { grid-template-columns: 1fr; gap: .9rem; }
+    .site-caudete-se-mueve .about-principle { padding: 1.5rem; }
+}
+
+/* Valores: mismo lenguaje de tarjetas que misión y visión. */
+.site-caudete-se-mueve .about-values { padding: 1.25rem 1.5rem clamp(4rem, 7vw, 6rem); background: #f7faf6; }
+.site-caudete-se-mueve .about-values-inner { width: min(100%, 1120px); margin: 0 auto; }
+.site-caudete-se-mueve .about-values-heading { max-width: 760px; margin: 0 auto clamp(1.8rem, 3.5vw, 2.5rem); text-align: center; }
+.site-caudete-se-mueve .about-values-heading h2 { color: #102326; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 760; letter-spacing: -.06em; line-height: 1.08; }
+.site-caudete-se-mueve .about-values-heading p { max-width: 68ch; margin: .9rem auto 0; color: #4e5b52; font-size: clamp(1rem, 1.25vw, 1.08rem); line-height: 1.7; }
+.site-caudete-se-mueve .about-values-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 1.2rem; margin: 0; padding: 0; list-style: none; }
+.site-caudete-se-mueve .about-value-card { display: flex; min-width: 0; flex-direction: column; align-items: stretch; }
+.site-caudete-se-mueve .about-value-card h3 { margin-top: 0; color: #102326; font-size: 1.08rem; font-weight: 720; letter-spacing: -.025em; line-height: 1.35; }
+.site-caudete-se-mueve .about-value-card p { margin-top: 1rem; color: #4d5a51; font-size: 1rem; line-height: 1.72; }
+.site-caudete-se-mueve .about-value-card:nth-child(7) { grid-column: 1 / -1; width: calc((100% - 1.2rem) / 2); justify-self: center; }
+
+@media (max-width: 620px) {
+    .site-caudete-se-mueve .about-values { padding: 1rem 1.25rem 3.75rem; }
+    .site-caudete-se-mueve .about-values-heading { margin-bottom: 1.5rem; text-align: left; }
+    .site-caudete-se-mueve .about-values-grid { grid-template-columns: 1fr; gap: .8rem; }
+    .site-caudete-se-mueve .about-value-card { padding: 1.2rem; }
+    .site-caudete-se-mueve .about-value-card .about-card-heading { align-items: flex-start; }
+    .site-caudete-se-mueve .about-value-card:nth-child(7) { grid-column: auto; width: auto; justify-self: stretch; }
+}
