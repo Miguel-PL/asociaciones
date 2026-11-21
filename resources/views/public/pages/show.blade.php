@@ -11,6 +11,9 @@
     $isCaudeteWorkPage = $site->slug === 'caudete-se-mueve'
         && $page->slug === 'que-hacemos';
 
+    $isCaudeteDonationsPage = $site->slug === 'caudete-se-mueve'
+        && in_array($page->slug, ['colabora', 'donaciones'], true);
+
     $workAreas = [
         [
             'number' => '01',
@@ -323,6 +326,153 @@
                     <p>Consulta cómo colaborar con Caudete Se Mueve a través de su página de donaciones.</p>
                     <a class="work-invitation-link" href="{{ route('pages.show', ['page' => 'donaciones']) }}">Ir a Donaciones <span aria-hidden="true">→</span></a>
                 </div>
+            </section>
+        </article>
+    @elseif ($isCaudeteDonationsPage)
+        <article class="donations-page" aria-labelledby="donations-title">
+            <section class="donations-hero" aria-labelledby="donations-title">
+                <div class="donations-hero-copy">
+                    <p class="eyebrow donations-eyebrow">Colabora con nosotros</p>
+                    <h1 id="donations-title">Cómo puedes ayudar</h1>
+                    <p class="donations-lead">Únete / Cómo colaborar</p>
+                    <p>En <strong>Desde Caudete Se Mueve</strong> no existen las estructuras rígidas: cualquier persona, con el tiempo o los recursos de los que disponga, puede ser un motor de cambio. Tu implicación es lo que hace posible que la solidaridad de nuestro pueblo llegue a cualquier parte del mundo.</p>
+                    <p>Descubre las diferentes formas en las que puedes arrimar el hombro:</p>
+                </div>
+                <div class="donations-hero-mark">
+                    <h2>Hay muchas formas de colaborar</h2>
+                    <div class="donations-options-grid">
+                        <div class="donations-option">
+                            <span class="donations-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/><path d="M8 12h2l1-2 2 4 1-2h2"/></svg></span>
+                            <div><h3><a href="#donations-voluntariado">Voluntariado</a></h3><p>Dedica tu tiempo y experiencia</p></div>
+                        </div>
+                        <div class="donations-option">
+                            <span class="donations-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7 12 3l9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/><path d="m7.5 5 9 4"/></svg></span>
+                            <div><h3><a href="#donations-materiales">Donaciones</a></h3><p>Aporta materiales que puedan ayudar</p></div>
+                        </div>
+                        <div class="donations-option">
+                            <span class="donations-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11V6l13-3v18L4 17v-6Z"/><path d="M4 11h13M8 18l1.5 4h3L11 17"/><path d="M20 8c1.2 1 1.2 5 0 6"/></svg></span>
+                            <div><h3><a href="#donations-movilizaciones">Movilizaciones</a></h3><p>Haz visible tu compromiso</p></div>
+                        </div>
+                        <div class="donations-option">
+                            <span class="donations-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
+                            <div><h3><a href="#donations-apoyo-economico">Apoyo económico</a></h3><p>Contribuye a mantener los proyectos</p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="donations-ways" aria-label="Formas de colaborar">
+                <section class="donations-way" id="donations-voluntariado" aria-labelledby="donation-volunteer-title">
+                    <div class="donations-way-heading">
+                        <span class="donations-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/><path d="M8 12h2l1-2 2 4 1-2h2"/></svg></span>
+                        <div><p class="donations-number">01 · Participación</p><h2 id="donation-volunteer-title">Hazte Voluntario/a</h2><p class="donations-subtitle">Pon tus manos en acción</p></div>
+                    </div>
+                    <p>Si quieres comprometerte de forma activa, te necesitamos en el día a día de nuestro colectivo. El trabajo es variado y siempre se adapta a tus posibilidades:</p>
+                    <ul class="donations-detail-list">
+                        <li><strong>Logística y almacén:</strong> Ayúdanos en las jornadas de recepción de material, clasificación textil (triaje de ropa de abrigo) y el paletizado técnico para la carga de nuestros contenedores humanitarios.</li>
+                        <li><strong>Taller mecánico solidario:</strong> Si tienes nociones de mecánica de bicicletas o simplemente quieres aprender, puedes colaborar en la puesta a punto y reparación de las bicicletas que entregamos a colectivos vulnerables.</li>
+                        <li><strong>Eventos y sensibilización:</strong> Participa en la organización de nuestros mercadillos solidarios, eventos culturales, stands informativos o impartiendo charlas en los centros educativos.</li>
+                    </ul>
+                </section>
+
+                <section class="donations-way" id="donations-materiales" aria-labelledby="donation-material-title">
+                    <div class="donations-way-heading">
+                        <span class="donations-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7 12 3l9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/><path d="m7.5 5 9 4"/></svg></span>
+                        <div><p class="donations-number">02 · Recursos</p><h2 id="donation-material-title">Donaciones Materiales</h2><p class="donations-subtitle">Lo que tú ya no usas, aquí transforma vidas</p></div>
+                    </div>
+                    <p>Periódicamente activamos campañas específicas según las necesidades más urgentes que nos trasladan desde los campos de refugio o las redes de distribución local. Puedes colaborar aportando:</p>
+                    <ul class="donations-detail-list">
+                        <li><strong>Bicicletas en desuso:</strong> No importa si necesitan una puesta a punto. Las recogemos, las reparamos en nuestro taller y las convertimos en herramientas de transporte digno y autonomía.</li>
+                        <li><strong>Alimentos no perecederos:</strong> Participa aportando alimentos de primera necesidad en nuestras recogidas escolares, en los supermercados de Caudete o en los puntos de recogida locales autorizados.</li>
+                        <li><strong>Ropa técnica y de abrigo:</strong> Durante los periodos de campaña, recogemos mantas, sacos de dormir, chaquetas de invierno y calzado resistente para las rutas migratorias europeas. <em>(Consulta en nuestras redes sociales o sección de noticias si hay una campaña textil activa en este momento).</em></li>
+                    </ul>
+                </section>
+
+                <section class="donations-way" id="donations-movilizaciones" aria-labelledby="donation-mobilizations-title">
+                    <div class="donations-way-heading">
+                        <span class="donations-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11V6l13-3v18L4 17v-6Z"/><path d="M4 11h13M8 18l1.5 4h3L11 17"/><path d="M20 8c1.2 1 1.2 5 0 6"/></svg></span>
+                        <div><p class="donations-number">03 · Acción colectiva</p><h2 id="donation-mobilizations-title">Participa en las Movilizaciones</h2><p class="donations-subtitle">Pon tu voz</p></div>
+                    </div>
+                    <p>La defensa de la justicia social y los Derechos Humanos también se ejerce ocupando el espacio público de manera pacífica.</p>
+                    <ul class="donations-detail-list">
+                        <li><strong>Concentraciones mensuales:</strong> Súmate a nuestras movilizaciones ciudadanas bajo el lema "No a la Guerra". Tu presencia en la calle es vital para romper el silencio, denunciar las vulneraciones de derechos internacionales y visibilizar las crisis humanitarias.</li>
+                    </ul>
+                </section>
+
+                <section class="donations-way donations-way--economic" id="donations-apoyo-economico" aria-labelledby="donation-economic-title">
+                    <div class="donations-way-heading">
+                        <span class="donations-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
+                        <div><p class="donations-number">04 · Apoyo a proyectos</p><h2 id="donation-economic-title">Colaboración Económica</h2><p class="donations-subtitle">Apoya nuestros proyectos</p></div>
+                    </div>
+                    <p>Somos un colectivo totalmente independiente . Cada euro recaudado se destina íntegramente a sufragar los costes logísticos de los envíos (tasas de contenedores marítimos, combustible de furgonetas de ayuda, herramientas para el taller , compra de alimentos)</p>
+                    <ul class="donations-detail-list">
+                        <li><strong>Eventos benéficos:</strong> Ven a disfrutar de nuestras jornadas de "Tapa Solidaria", eventos de ocio o compra en nuestros mercadillos del Día del Refugiado.</li>
+                        <li><strong>Fila Cero / Donaciones:</strong> Puedes realizar una aportación económica puntual a través de nuestros canales oficiales en las campañas de emergencia y también a través de nuestra cuenta en CaixaBank</li>
+                    </ul>
+                    <div class="donations-bank" aria-label="Datos bancarios">
+                        <p class="donations-bank-label">Cuenta de CaixaBank</p>
+                        <p><strong>Titular</strong>, Plataforma Ciudadana Caudete se Mueve.</p>
+                        <p class="donations-iban-label">IBAN</p>
+                        <p class="donations-iban">ES90 2100 7984 8301 0017 9937</p>
+                    </div>
+                </section>
+            </section>
+
+            <section class="donations-contact" aria-labelledby="donations-contact-title">
+                <div class="donations-contact-copy">
+                    <p class="donations-number">Estamos aquí para ayudarte</p>
+                    <h2 id="donations-contact-title">¿Quieres dar el paso? ¡Contáctanos!</h2>
+                    <p>Si tienes dudas, quieres traer una bicicleta o quieres sumarte a la próxima jornada de voluntariado en el almacén, no dudes en escribirnos:</p>
+                </div>
+                <div class="donations-contact-details">
+                    <p><span class="donations-contact-label">Punto de encuentro/Almacén</span><span>Isaac Peral, 10</span></p>
+                    <p><span class="donations-contact-label">Correo electrónico</span><a href="mailto:laemi_61@hotmail.com">laemi_61@hotmail.com</a></p>
+                    <div class="donations-social"><span class="donations-contact-label">Redes Sociales</span><a href="https://www.facebook.com/caudetemueve" target="_blank" rel="noopener noreferrer">Facebook <span aria-hidden="true">↗</span></a><a href="https://www.instagram.com/caudetesemueve/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></div>
+                </div>
+            </section>
+
+            <section class="donations-guide" aria-labelledby="donations-guide-title">
+                <header class="donations-guide-heading">
+                    <p class="eyebrow donations-eyebrow">Antes de donar</p>
+                    <h2 id="donations-guide-title">Guía práctica para donaciones responsables</h2>
+                    <p class="donations-guide-quote">"Donar es un acto de justicia y dignidad, no de caridad"</p>
+                    <p>Cuando preparamos un envío humanitario o un reparto local, nuestro objetivo número uno es <strong>garantizar la dignidad de las personas que lo van a recibir</strong>. El material que enviamos a campos de refugiados, rutas migratorias o familias vulnerables debe ser una herramienta útil y de calidad, capaz de resistir condiciones extremas.</p>
+                    <p>Para ayudarnos a optimizar el trabajo de nuestro equipo de voluntarios en el almacén, te pedimos que sigas esta sencilla guía antes de traernos tus donaciones:</p>
+                </header>
+
+                <div class="donations-guide-grid">
+                    <section class="donations-guide-card" aria-labelledby="guide-bikes-title">
+                        <p class="donations-number">01 · Movilidad</p><h3 id="guide-bikes-title">Donación de Bicicletas <span>(Proyecto de Movilidad)</span></h3>
+                        <div class="donations-accept"><h4><span aria-hidden="true">✓</span> Lo que SÍ necesitamos</h4><p>Bicicletas de cualquier tamaño (especialmente de adulto), aunque tengan piezas desgastadas, óxido superficial o necesiten ajustes. Nuestro taller solidario las pondrá a punto mecánicamente.</p></div>
+                        <div class="donations-reject"><h4><span aria-hidden="true">×</span> Lo que NO podemos aceptar</h4><p>Bicicletas con el cuadro partido, fisurado o gravemente deformado cuya reparación comprometa la seguridad de la persona que la va a utilizar.</p></div>
+                    </section>
+                    <section class="donations-guide-card" aria-labelledby="guide-clothes-title">
+                        <p class="donations-number">02 · Campañas textiles</p><h3 id="guide-clothes-title">Donación de Ropa y Calzado <span>(Campañas Textiles)</span></h3>
+                        <p class="donations-campaign-note"><em>Recuerda traer material únicamente cuando haya una campaña textil activa en la web o redes sociales.</em></p>
+                        <div class="donations-accept"><h4><span aria-hidden="true">✓</span> Lo que SÍ necesitamos</h4><p>Ropa técnica de abrigo (anoraks, chaquetones impermeables), mantas, sacos de dormir en buen estado, calzado resistente de montaña o deportivo, y ropa cómoda/deportiva. Las prendas deben estar limpias y con las cremalleras operativas.</p></div>
+                        <div class="donations-reject"><h4><span aria-hidden="true">×</span> Lo que NO podemos aceptar</h4><p>Ropa rota, sucia, desgastada o con manchas imposibles de quitar. Tampoco aceptamos ropa de fiesta, trajes formales, tacones o prendas de vestir que no respondan a una necesidad real de abrigo o comodidad en situaciones de vulnerabilidad.</p></div>
+                        <blockquote class="donations-golden-rule"><strong>La regla de oro:</strong> <em>Si no se lo pondrías a un ser querido tuyo, no lo dones para el contenedor.</em></blockquote>
+                    </section>
+                    <section class="donations-guide-card" aria-labelledby="guide-food-title">
+                        <p class="donations-number">03 · Red local y emergencias</p><h3 id="guide-food-title">Donación de Alimentos</h3>
+                        <div class="donations-accept"><h4><span aria-hidden="true">✓</span> Lo que SÍ necesitamos</h4><p>Alimentos no perecederos envasados de forma segura (legumbres, arroz, pasta, aceite, conservas en lata, leche en polvo, etc.). Si tienes un excedente agrícola o comercial con fecha de caducidad corta, avísanos con urgencia para activar nuestra red de distribución rápida local.</p></div>
+                        <div class="donations-reject"><h4><span aria-hidden="true">×</span> Lo que NO podemos aceptar</h4><p>Alimentos cuya fecha de consumo preferente o caducidad ya haya pasado, envases de vidrio o cartón que estén abiertos, abollados, dañados o que presenten pérdidas de contenido.</p></div>
+                    </section>
+                    <section class="donations-guide-card" aria-labelledby="guide-hygiene-title">
+                        <p class="donations-number">04 · Primera necesidad</p><h3 id="guide-hygiene-title">Productos de Higiene y Primera Necesidad</h3>
+                        <div class="donations-accept"><h4><span aria-hidden="true">✓</span> Lo que SÍ necesitamos</h4><p>Productos de higiene personal nuevos y precintados (gel, champú, dentífrico, compresas, pañales) y material de primeros auxilios.</p></div>
+                        <div class="donations-reject"><h4><span aria-hidden="true">×</span> Lo que NO podemos aceptar</h4><p>Botes de higiene ya empezados o abiertos, medicamentos caducados o que requieran receta e instrucciones médicas específicas.</p></div>
+                    </section>
+                </div>
+
+                <section class="donations-why" aria-labelledby="donations-why-title">
+                    <header><p class="eyebrow donations-eyebrow">Solidaridad responsable</p><h3 id="donations-why-title">¿Por qué es tan importante seguir esta guía?</h3></header>
+                    <div class="donations-why-grid">
+                        <article><span class="donations-why-number">01</span><h4>Por Respeto y Dignidad</h4><p>Las personas en situación de vulnerabilidad merecen recibir artículos útiles y en perfecto estado de uso. La solidaridad horizontal se basa en el respeto mutuo.</p></article>
+                        <article><span class="donations-why-number">02</span><h4>Por Eficiencia Logística</h4><p>Cada minuto que nuestros voluntarios pasan seleccionando o descartando ropa inservible en el almacén es un minuto menos que dedicamos a estibar contenedores o coordinar repartos de emergencia.</p></article>
+                        <article><span class="donations-why-number">03</span><h4>Por Sostenibilidad Económica</h4><p>Transportar material que no sirve consume espacio físico en los palets y genera costes de transporte marítimo muy elevados que pagamos entre todos. Optimizar la carga es clave para que los contenedores lleguen a su destino.</p></article>
+                    </div>
+                </section>
             </section>
         </article>
     @else
