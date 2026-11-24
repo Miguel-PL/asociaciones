@@ -102,12 +102,23 @@
         <nav id="site-navigation" aria-label="Principal" class="site-navigation">
             <a href="{{ route('home') }}"
                @class(['is-active' => request()->routeIs('home')])>Inicio</a>
-            <a href="{{ route('posts.index') }}"
-               @class(['is-active' => request()->routeIs('posts.*')])>Noticias</a>
-            @foreach ($navPages as $page)
-                <a href="{{ route('pages.show', $page) }}"
-                   @class(['is-active' => request()->routeIs('pages.show', $page)])>{{ $page->title }}</a>
-            @endforeach
+            @if ($site->slug === 'caudete-se-mueve')
+                @foreach ($navPages as $page)
+                    @if ($page->slug === 'colabora')
+                        <a href="{{ route('posts.index') }}"
+                           @class(['is-active' => request()->routeIs('posts.*')])>Noticias</a>
+                    @endif
+                    <a href="{{ route('pages.show', $page) }}"
+                       @class(['is-active' => request()->routeIs('pages.show', $page)])>{{ $page->title }}</a>
+                @endforeach
+            @else
+                <a href="{{ route('posts.index') }}"
+                   @class(['is-active' => request()->routeIs('posts.*')])>Noticias</a>
+                @foreach ($navPages as $page)
+                    <a href="{{ route('pages.show', $page) }}"
+                       @class(['is-active' => request()->routeIs('pages.show', $page)])>{{ $page->title }}</a>
+                @endforeach
+            @endif
         </nav>
     </div>
 </header>

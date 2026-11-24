@@ -8,6 +8,20 @@
 @section('og_published_time', $post->published_at?->toAtomString())
 
 @section('content')
+    @if ($isPreview ?? false)
+        <aside class="mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-600" role="status">
+            <span>
+                <strong class="font-semibold text-stone-800">Vista previa</strong>
+                @if (! $post->is_published || $post->published_at?->isFuture())
+                    — esta noticia todavía no está publicada.
+                @else
+                    — se muestran los cambios guardados de esta noticia publicada.
+                @endif
+            </span>
+            <a href="{{ $previewEditUrl }}" class="link">Volver a editar</a>
+        </aside>
+    @endif
+
     <article class="editorial-page">
         <p class="text-sm">
             <a href="{{ route('posts.index') }}" class="link">Noticias</a>

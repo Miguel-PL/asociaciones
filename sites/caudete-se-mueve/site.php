@@ -56,10 +56,12 @@ return [
     */
     'nav' => [
         'quienes-somos',
-        'junta-directiva',
+        'que-hacemos',
+        'colabora',
     ],
 
     'footer' => [
+        'board' => 'junta-directiva',
         'legal' => 'aviso-legal',
         'privacy' => 'privacidad',
     ],

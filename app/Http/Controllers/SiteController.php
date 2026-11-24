@@ -98,6 +98,7 @@ abstract class SiteController extends Controller
     protected function legalLinks(Site $site): array
     {
         $labels = [
+            'board' => 'Junta directiva',
             'legal' => 'Aviso legal',
             'privacy' => 'Privacidad',
             'cookies' => 'Cookies',

@@ -8,32 +8,32 @@
         <div class="home-hero-copy">
             <p class="eyebrow"><span></span> Plataforma ciudadana · Caudete</p>
             <h1 id="home-title">Una comunidad<br>que <em>se mueve</em>.</h1>
-            <p class="home-hero-description">{{ $site->description }}</p>
+            <p class="home-hero-description">Caudete Se Mueve es un colectivo vecinal que transforma la solidaridad de nuestro municipio en acción. Trabajamos por los Derechos Humanos, la justicia social y el apoyo a las personas en situación de vulnerabilidad, aquí y más allá de nuestras fronteras.</p>
             <div class="home-hero-actions">
-                <a class="button button-dark" href="{{ route('posts.index') }}">Descubre lo que hacemos</a>
-                @foreach ($navPages->take(1) as $page)
-                    <a class="text-link" href="{{ route('pages.show', $page) }}">{{ $page->title }}</a>
-                @endforeach
+                <a class="button button-dark" href="{{ route('pages.show', ['page' => 'que-hacemos']) }}">Qué hacemos</a>
+                <a class="button home-button-secondary" href="{{ route('pages.show', ['page' => 'quienes-somos']) }}">Quiénes somos</a>
             </div>
-            <div class="home-hero-note"><span class="note-mark" aria-hidden="true">10</span><span><strong>Diez años moviéndonos</strong><br>por la dignidad humana</span></div>
         </div>
-        <div class="home-hero-art" role="img" aria-label="Logotipo del décimo aniversario de Caudete Se Mueve">
-            <div class="hero-art-ring"></div>
-            <div class="hero-art-disc"><img src="{{ $site->asset($site->logo) }}" alt=""></div>
-        </div>
+        <figure class="home-hero-art">
+            <div class="home-art-orbit">
+                <div class="home-art-image-frame">
+                    <img src="{{ $site->asset($site->logo) }}" alt="Logotipo de Caudete Se Mueve" fetchpriority="high">
+                </div>
+            </div>
+        </figure>
         <a class="hero-scroll" href="#actualidad"><span></span> Sigue explorando</a>
     </section>
 
-    <section class="news-section" id="actualidad" aria-labelledby="news-title">
+    <section class="news-section home-news-section" id="actualidad" aria-labelledby="news-title">
         <div class="section-heading">
             <div><p class="eyebrow">Lo que pasa, lo que nos mueve</p><h2 id="news-title">Actualidad <span>de la asociación.</span></h2></div>
-            @if ($posts->isNotEmpty())<a class="text-link" href="{{ route('posts.index') }}">Todas las noticias</a>@endif
+            <a class="text-link" href="{{ route('posts.index') }}">Todas las noticias</a>
         </div>
 
         @if ($posts->isEmpty())
             <div class="empty-state"><p class="eyebrow">Pronto, más noticias</p><p>Todavía no hay noticias publicadas. Vuelve pronto para conocer la actualidad de Caudete Se Mueve.</p></div>
         @else
-            <div class="news-grid">
+            <div class="news-grid home-news-grid">
                 @foreach ($posts as $post)
                     @include('public.partials.post-card', ['post' => $post])
                 @endforeach
@@ -41,9 +41,9 @@
         @endif
     </section>
 
-    <section class="participation-band">
+    <section class="participation-band home-participation" aria-labelledby="home-participation-title">
         <div class="participation-symbol" aria-hidden="true">✳</div>
-        <div><p class="eyebrow">Las cosas cambian cuando nos implicamos</p><h2>Un mundo mejor lo <br>hacemos entre<br><em>todas y todos.</em></h2></div>
-        <div class="participation-action"><p>Ideas, encuentros y un mundo más justo empiezan por participar.</p>@foreach ($navPages->take(1) as $page)<a class="button button-light" href="{{ route('pages.show', $page) }}">{{ $page->title }}</a>@endforeach</div>
+        <div><p class="eyebrow">Las cosas cambian cuando nos implicamos</p><h2 id="home-participation-title">La solidaridad se construye entre todos.</h2></div>
+        <div class="participation-action"><p>Cada gesto cuenta. Súmate a nuestra comunidad y ayúdanos a transformar la solidaridad en acción.</p><a class="button button-light" href="{{ route('pages.show', ['page' => 'colabora']) }}">Quiero colaborar</a></div>
     </section>
 @endsection

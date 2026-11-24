@@ -167,6 +167,68 @@ class PublicSiteTest extends TestCase
             ->assertDontSee('Programada');
     }
 
+    public function test_the_news_list_filters_by_partial_title_and_category_and_keeps_filters_in_pagination(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $category = Category::create(['name' => 'Actividades']);
+        $otherCategory = Category::create(['name' => 'Comunicados']);
+
+        for ($number = 1; $number <= 10; $number++) {
+            $this->noticia(sprintf('Campaña vecinal %02d', $number), [
+                'category_id' => $category->id,
+            ]);
+        }
+
+        $this->noticia('Campaña en otra categoría', ['category_id' => $otherCategory->id]);
+        $this->noticia('Otra actividad', ['category_id' => $category->id]);
+        $this->noticia('Campaña vecinal borrador', [
+            'category_id' => $category->id,
+            'is_published' => false,
+        ]);
+
+        $this->visitar('caudete-se-mueve', '/noticias?q=Campa%C3%B1a%20vecinal&category='.$category->id)
+            ->assertOk()
+            ->assertSee('Campaña vecinal 01')
+            ->assertDontSee('Campaña en otra categoría')
+            ->assertDontSee('Otra actividad')
+            ->assertDontSee('Campaña vecinal borrador')
+            ->assertDontSee('Campaña vecinal 07')
+            ->assertSee('page=2')
+            ->assertSee('category='.$category->id)
+            ->assertSee('Mostrando')
+            ->assertSee('1–6')
+            ->assertSee('<strong>10</strong> noticias', false);
+
+        $this->visitar('caudete-se-mueve', '/noticias?q=Campa%C3%B1a%20vecinal&category='.$category->id.'&page=2')
+            ->assertOk()
+            ->assertSee('Campaña vecinal 10')
+            ->assertSee('Campaña vecinal 07')
+            ->assertDontSee('Campaña vecinal 06')
+            ->assertSee('7–10');
+
+        $this->visitar('caudete-se-mueve', '/noticias?q=vecinal')
+            ->assertOk()
+            ->assertSee('Campaña vecinal 01')
+            ->assertDontSee('Otra actividad');
+
+        $this->visitar('caudete-se-mueve', '/noticias?category='.$category->id)
+            ->assertOk()
+            ->assertSee('Campaña vecinal 01')
+            ->assertDontSee('Campaña en otra categoría');
+
+        $this->visitar('caudete-se-mueve', '/noticias')
+            ->assertOk()
+            ->assertSee('Limpiar filtros')
+            ->assertSee('name="q" value=""', false)
+            ->assertSee('<option value="" selected>Todas las categorías</option>', false)
+            ->assertDontSee('Campaña vecinal borrador');
+
+        $this->visitar('caudete-se-mueve', '/noticias?q=sin-resultados')
+            ->assertOk()
+            ->assertSee('No se han encontrado noticias con esos filtros.')
+            ->assertSee('Limpiar filtros y ver todas las noticias');
+    }
+
     public function test_a_news_detail_renders(): void
     {
         $this->activar('caudete-se-mueve');

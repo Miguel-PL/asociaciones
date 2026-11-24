@@ -4,6 +4,7 @@ use App\Http\Controllers\PublicSite\CategoryController;
 use App\Http\Controllers\PublicSite\HomeController;
 use App\Http\Controllers\PublicSite\PageController;
 use App\Http\Controllers\PublicSite\PostController;
+use App\Http\Middleware\AuthenticatePostPreview;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/noticias', [PostController::class, 'index'])->name('posts.index');
+Route::get('/noticias/{post}/vista-previa', [PostController::class, 'preview'])
+    ->middleware(AuthenticatePostPreview::class)
+    ->name('posts.preview');
 Route::get('/noticias/{post}', [PostController::class, 'show'])->name('posts.show');
 
 Route::get('/categorias/{category}', [CategoryController::class, 'show'])->name('categories.show');
