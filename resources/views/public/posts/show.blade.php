@@ -22,16 +22,16 @@
         </aside>
     @endif
 
-    <article class="editorial-page">
-        <p class="text-sm">
+    <article class="editorial-page article-detail">
+        <nav class="article-back" aria-label="Navegación de noticias">
             <a href="{{ route('posts.index') }}" class="link">Noticias</a>
-        </p>
+        </nav>
 
-        <header class="page-heading article-heading"><p class="eyebrow">Voces de Caudete</p><h1>
-            {{ $post->title }}
-        </h1>
+        <header class="page-heading article-heading">
+            <p class="eyebrow">Voces de Caudete</p>
+            <h1>{{ $post->title }}</h1>
 
-        <p class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500">
+            <p class="article-meta">
             @if ($post->category)
                 <a href="{{ route('categories.show', $post->category) }}" class="link">
                     {{ $post->category->name }}
@@ -43,23 +43,28 @@
                     {{ $post->published_at->translatedFormat('d \d\e F \d\e Y') }}
                 </time>
             @endif
-        </p>
+            </p>
         </header>
 
         @if ($post->cover_image_url)
             <figure class="article-cover"><img src="{{ $post->cover_image_url }}" alt=""></figure>
         @endif
 
-        <div class="prose-body mt-8 text-stone-700">
-            @include('public.partials.rich-content', ['content' => $post->body])
+        <div class="article-reading-column">
+            <div class="prose-body article-body">
+                @include('public.partials.rich-content', ['content' => $post->body])
+            </div>
         </div>
     </article>
 
     @if ($more->isNotEmpty())
-        <section class="mx-auto mt-16 max-w-3xl border-t border-stone-200 pt-8">
-            <h2 class="text-xl font-bold tracking-tight text-stone-900">Más noticias</h2>
+        <section class="article-more posts-archive" aria-labelledby="article-more-title">
+            <header class="article-more-heading">
+                <p class="eyebrow">Sigue leyendo</p>
+                <h2 id="article-more-title">Más noticias</h2>
+            </header>
 
-            <div class="mt-6 grid gap-6 sm:grid-cols-3">
+            <div class="listing-grid posts-grid">
                 @foreach ($more as $otra)
                     @include('public.partials.post-card', ['post' => $otra])
                 @endforeach
