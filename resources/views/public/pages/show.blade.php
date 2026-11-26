@@ -14,6 +14,12 @@
     $isCaudeteDonationsPage = $site->slug === 'caudete-se-mueve'
         && in_array($page->slug, ['colabora', 'donaciones'], true);
 
+    $isCaudeteLegalNoticePage = $site->slug === 'caudete-se-mueve'
+        && $page->slug === 'aviso-legal';
+
+    $isCaudetePrivacyPage = $site->slug === 'caudete-se-mueve'
+        && $page->slug === 'privacidad';
+
     $workAreas = [
         [
             'number' => '01',
@@ -324,7 +330,9 @@
                 </div>
                 <div class="work-invitation-action">
                     <p>Consulta cómo colaborar con Caudete Se Mueve a través de su página de donaciones.</p>
-                    <a class="work-invitation-link" href="{{ route('pages.show', ['page' => 'donaciones']) }}">Ir a Donaciones <span aria-hidden="true">→</span></a>
+                    @if ($page = $pageLinks->get('donaciones'))
+                        <a class="work-invitation-link" href="{{ route('pages.show', $page) }}">Ir a Donaciones <span aria-hidden="true">→</span></a>
+                    @endif
                 </div>
             </section>
         </article>
@@ -425,7 +433,7 @@
                     <p>Si tienes dudas, quieres traer una bicicleta o quieres sumarte a la próxima jornada de voluntariado en el almacén, no dudes en escribirnos:</p>
                 </div>
                 <div class="donations-contact-details">
-                    <p><span class="donations-contact-label">Punto de encuentro/Almacén</span><span>Isaac Peral, 10</span></p>
+                    <p><span class="donations-contact-label">Punto de encuentro/Almacén</span><span>C. Isaac Peral, 10, 02660 Caudete, Albacete</span></p>
                     <p><span class="donations-contact-label">Correo electrónico</span><a href="mailto:laemi_61@hotmail.com">laemi_61@hotmail.com</a></p>
                     <div class="donations-social"><span class="donations-contact-label">Redes Sociales</span><a href="https://www.facebook.com/caudetemueve" target="_blank" rel="noopener noreferrer">Facebook <span aria-hidden="true">↗</span></a><a href="https://www.instagram.com/caudetesemueve/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></div>
                 </div>
@@ -474,6 +482,89 @@
                     </div>
                 </section>
             </section>
+        </article>
+    @elseif ($isCaudeteLegalNoticePage)
+        <article class="legal-notice-page" aria-labelledby="legal-notice-title">
+            <header class="page-heading legal-notice-heading">
+                <p class="eyebrow">Caudete Se Mueve</p>
+                <h1 id="legal-notice-title">Aviso legal</h1>
+            </header>
+
+            <div class="legal-notice-content">
+                <section aria-labelledby="legal-notice-identification">
+                    <h2 id="legal-notice-identification">1. Datos identificativos</h2>
+                    <p>En cumplimiento con el deber de información recogido en el artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se informa que la titularidad de este sitio web corresponde a:</p>
+                    <p>Denominación: Plataforma ciudadana Caudete se Mueve</p>
+                    <p>NIF / CIF: G 02592145</p>
+                    <p>Domicilio: C. del Alcalde Luis Pascual, 1, 02660 Caudete, Albacete</p>
+                    <p>Correo electrónico de contacto <a href="mailto:laemi_61@hotmail.com">laemi_61@hotmail.com</a></p>
+                    <p>Datos registrales: Inscrita en el Registro de Asociaciones de Castilla-La Mancha con el número 28862</p>
+                </section>
+
+                <section aria-labelledby="legal-notice-terms">
+                    <h2 id="legal-notice-terms">2. Objeto y condiciones de uso</h2>
+                    <p>El presente sitio web tiene como objeto la difusión, sensibilización e información sobre actividades humanitarias, iniciativas solidarias y acciones en defensa de los Derechos Humanos impulsadas desde Caudete se Mueve, así como facilitar canales de participación y voluntariado ciudadano.</p>
+                    <p>El acceso y uso de esta web atribuye la condición de usuario e implica la aceptación de estas condiciones. El usuario se compromete a hacer un uso adecuado, respetuoso y lícito de los contenidos y de los formularios habilitados, absteniéndose de enviar mensajes ofensivos, ilícitos, que vulneren derechos fundamentales o que puedan dañar los sistemas de la web.</p>
+                </section>
+
+                <section aria-labelledby="legal-notice-intellectual-property">
+                    <h2 id="legal-notice-intellectual-property">3. Propiedad intelectual e industrial</h2>
+                    <p>Los textos, fotografías, logotipos, carteles y demás contenidos publicados en esta web son propiedad de Caudete se Mueve o cuentan con la debida autorización para su difusión. Queda prohibida su reproducción o uso con fines comerciales sin autorización previa, permitiéndose su difusión con fines informativos o solidarios siempre que se cite la fuente.</p>
+                </section>
+
+                <section aria-labelledby="legal-notice-liability">
+                    <h2 id="legal-notice-liability">4. Exclusión de responsabilidad</h2>
+                    <p>Caudete se Mueve no se hace responsable de las opiniones vertidas por terceros en los espacios de participación, reservándose el derecho a moderar o eliminar cualquier mensaje que incite al odio, la discriminación o resulte contrario a los Derechos Humanos y a la legalidad vigente.</p>
+                </section>
+            </div>
+        </article>
+    @elseif ($isCaudetePrivacyPage)
+        <article class="legal-notice-page" aria-labelledby="privacy-title">
+            <header class="page-heading legal-notice-heading">
+                <p class="eyebrow">Caudete Se Mueve</p>
+                <h1 id="privacy-title">Política de privacidad</h1>
+            </header>
+
+            <div class="legal-notice-content">
+                <section aria-labelledby="privacy-controller">
+                    <h2 id="privacy-controller">1. Responsable del tratamiento</h2>
+                    <p><strong>Identidad:</strong> Plataforma Ciudadana Caudete se Mueve</p>
+                    <p><strong>NIF / CIF:</strong> G02592145</p>
+                    <p><strong>Dirección:</strong> C. del Alcalde Luis Pascual, 1, 02660 Caudete, Albacete</p>
+                    <p><strong>Correo electrónico:</strong> <a href="mailto:laemi_61@hotmail.com">laemi_61@hotmail.com</a></p>
+                </section>
+
+                <section aria-labelledby="privacy-purpose">
+                    <h2 id="privacy-purpose">2. Finalidad del tratamiento de datos</h2>
+                    <p>En Caudete se Mueve tratamos los datos personales que nos facilitan las personas interesadas con las siguientes finalidades:</p>
+                    <p><strong>Solicitudes de voluntariado y colaboración:</strong> Gestionar las solicitudes recibidas por correo electrónico o teléfono, coordinar la participación en actividades de la asociación y mantener el contacto con las personas voluntarias.</p>
+                    <p><strong>Contacto y consultas:</strong> Atender las consultas, sugerencias, propuestas de colaboración y solicitudes de información que recibimos por correo electrónico o teléfono.</p>
+                    <p>Los datos que solicitamos para gestionar el voluntariado son el nombre y el número de teléfono. Cuando una persona contacta por correo electrónico, también podemos recibir su dirección de correo electrónico.</p>
+                </section>
+
+                <section aria-labelledby="privacy-legal-basis">
+                    <h2 id="privacy-legal-basis">3. Legitimación</h2>
+                    <p>La base jurídica para el tratamiento de los datos será el consentimiento de la persona interesada al solicitar voluntariamente su participación o colaboración y facilitar sus datos para que podamos contactar con ella y coordinar las actividades.</p>
+                    <p>La persona interesada puede retirar su consentimiento y solicitar que dejemos de utilizar sus datos para estas finalidades.</p>
+                </section>
+
+                <section aria-labelledby="privacy-retention">
+                    <h2 id="privacy-retention">4. Conservación de los datos</h2>
+                    <p>Los datos de contacto de las personas voluntarias se conservarán mientras mantengan su relación de colaboración con Caudete se Mueve y sean necesarios para coordinar las actividades de la asociación.</p>
+                    <p>Cuando una persona deje de colaborar, revisaremos si es necesario mantener sus datos. Si ya no son necesarios, se eliminarán, salvo que exista alguna obligación legal que requiera conservarlos.</p>
+                    <p>Las personas interesadas pueden solicitar en cualquier momento la supresión de sus datos personales.</p>
+                </section>
+
+                <section aria-labelledby="privacy-recipients">
+                    <h2 id="privacy-recipients">5. Destinatarios y cesión de datos</h2>
+                    <p>Tus datos no se cederán ni venderán a terceros, salvo obligación legal. Únicamente podrán tener acceso técnico los proveedores estrictamente necesarios para el funcionamiento de la web (como el servicio de alojamiento web o correo electrónico), quienes cumplen con la normativa europea de protección de datos.</p>
+                </section>
+
+                <section aria-labelledby="privacy-rights">
+                    <h2 id="privacy-rights">6. Derechos de los usuarios</h2>
+                    <p>Cualquier persona tiene derecho a obtener confirmación sobre si estamos tratando sus datos personales. Asimismo, tienes derecho a acceder a tus datos, solicitar la rectificación de los datos inexactos o solicitar su supresión cuando, entre otros motivos, ya no sean necesarios. Puedes ejercer estos derechos enviando un correo electrónico a <a href="mailto:laemi_61@hotmail.com">laemi_61@hotmail.com</a> indicando en el asunto "Protección de Datos".</p>
+                </section>
+            </div>
         </article>
     @else
     <article class="editorial-page">

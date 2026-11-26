@@ -284,6 +284,112 @@ class PublicSiteTest extends TestCase
         $this->visitar('caudete-se-mueve', '/'.$page->slug)->assertNotFound();
     }
 
+    public function test_unpublished_pages_are_missing_from_navigation_footer_and_sitemap(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $menuPage = $this->pagina('Quiénes somos', [
+            'slug' => 'quienes-somos',
+            'is_published' => false,
+        ]);
+        $legalPage = $this->pagina('Aviso legal', [
+            'slug' => 'aviso-legal',
+            'is_published' => false,
+        ]);
+        $privacyPage = $this->pagina('Política de privacidad', [
+            'slug' => 'privacidad',
+            'is_published' => false,
+        ]);
+        $otherPage = $this->pagina('Página temporal oculta', [
+            'slug' => 'pagina-temporal-oculta',
+            'is_published' => false,
+        ]);
+        $this->pagina('Junta directiva', ['slug' => 'junta-directiva']);
+        $baseUrl = 'http://caudete-se-mueve.test';
+
+        $this->visitar('caudete-se-mueve', '/junta-directiva')
+            ->assertOk()
+            ->assertDontSee($baseUrl.'/'.$menuPage->slug)
+            ->assertDontSee($baseUrl.'/'.$legalPage->slug)
+            ->assertDontSee($baseUrl.'/'.$privacyPage->slug);
+
+        $this->visitar('caudete-se-mueve', '/sitemap.xml')
+            ->assertOk()
+            ->assertDontSee($baseUrl.'/'.$menuPage->slug)
+            ->assertDontSee($baseUrl.'/'.$legalPage->slug)
+            ->assertDontSee($baseUrl.'/'.$privacyPage->slug)
+            ->assertDontSee($baseUrl.'/'.$otherPage->slug);
+    }
+
+    public function test_internal_page_links_follow_publication_state_and_return_when_republished(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $pages = collect([
+            'quienes-somos' => $this->pagina('Quiénes somos', ['slug' => 'quienes-somos']),
+            'que-hacemos' => $this->pagina('Qué hacemos', ['slug' => 'que-hacemos']),
+            'colabora' => $this->pagina('Colabora', ['slug' => 'colabora']),
+            'donaciones' => $this->pagina('Donaciones', ['slug' => 'donaciones']),
+            'junta-directiva' => $this->pagina('Junta directiva', ['slug' => 'junta-directiva']),
+            'aviso-legal' => $this->pagina('Aviso legal', ['slug' => 'aviso-legal']),
+            'privacidad' => $this->pagina('Privacidad', ['slug' => 'privacidad']),
+            'contacto' => $this->pagina('Contacto', ['slug' => 'contacto']),
+        ]);
+        $this->activar('miradas-violetas');
+        $this->pagina('Quiénes somos de Miradas', [
+            'slug' => 'quienes-somos',
+            'is_published' => false,
+        ]);
+        $this->activar('caudete-se-mueve');
+        $baseUrl = 'http://caudete-se-mueve.test';
+
+        $this->visitar('caudete-se-mueve', '/')
+            ->assertSee($baseUrl.'/quienes-somos')
+            ->assertSee($baseUrl.'/que-hacemos')
+            ->assertSee($baseUrl.'/colabora')
+            ->assertSee($baseUrl.'/junta-directiva')
+            ->assertSee($baseUrl.'/aviso-legal')
+            ->assertSee($baseUrl.'/privacidad');
+        $this->visitar('caudete-se-mueve', '/que-hacemos')
+            ->assertSee($baseUrl.'/donaciones');
+
+        foreach ($pages as $slug => $page) {
+            if ($slug !== 'contacto') {
+                $page->is_published = false;
+                $page->save();
+            }
+        }
+
+        $home = $this->visitar('caudete-se-mueve', '/')->assertOk();
+        $shell = $this->visitar('caudete-se-mueve', '/contacto')->assertOk();
+        $sitemap = $this->visitar('caudete-se-mueve', '/sitemap.xml')->assertOk();
+
+        foreach ($pages as $slug => $page) {
+            if ($slug === 'contacto') {
+                continue;
+            }
+
+            $url = $baseUrl.'/'.$slug;
+            $home->assertDontSee($url);
+            $shell->assertDontSee($url);
+            $sitemap->assertDontSee($url);
+            $this->visitar('caudete-se-mueve', '/'.$slug)->assertNotFound();
+        }
+
+        foreach ($pages as $slug => $page) {
+            if ($slug !== 'contacto') {
+                $page->is_published = true;
+                $page->save();
+            }
+        }
+
+        $home = $this->visitar('caudete-se-mueve', '/')->assertOk();
+        foreach (['quienes-somos', 'que-hacemos', 'colabora', 'junta-directiva', 'aviso-legal', 'privacidad'] as $slug) {
+            $home->assertSee($baseUrl.'/'.$slug);
+        }
+        $this->visitar('caudete-se-mueve', '/que-hacemos')
+            ->assertOk()
+            ->assertSee($baseUrl.'/donaciones');
+    }
+
     public function test_a_category_lists_only_its_own_news(): void
     {
         $this->activar('caudete-se-mueve');

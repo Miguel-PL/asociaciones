@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Auth\Login;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
+use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Models\Category;
 use App\Models\Page;
@@ -380,16 +381,19 @@ class PanelSiteIsolationTest extends TestCase
         $this->actingAs($this->caudete)->get('/caudete-se-mueve/admin/switch-site')->assertNotFound();
     }
 
-    public function test_each_panel_can_reach_the_create_and_edit_screens(): void
+    public function test_page_creation_and_editing_routes_are_not_available(): void
     {
-        // El boton "Crear" de los listados tiene que llevar a una pantalla real:
-        // sin la ruta create, el CRUD del panel esta roto.
-        foreach (['posts', 'pages', 'categories'] as $recurso) {
+        foreach (['posts', 'categories'] as $recurso) {
             $this->verComo($this->caudete, "/caudete-se-mueve/admin/{$recurso}/create")
                 ->assertOk();
 
             $this->verComo($this->miradas, "/miradas-violetas/admin/{$recurso}/create")
                 ->assertOk();
+        }
+
+        foreach (['caudete-se-mueve', 'miradas-violetas'] as $site) {
+            $this->verComo($site === 'caudete-se-mueve' ? $this->caudete : $this->miradas, "/{$site}/admin/pages/create")
+                ->assertNotFound();
         }
 
         $this->activar('caudete-se-mueve');
@@ -398,6 +402,82 @@ class PanelSiteIsolationTest extends TestCase
         $this->verComo($this->caudete, "/caudete-se-mueve/admin/categories/{$registro->slug}/edit")
             ->assertOk()
             ->assertSee('Categoria para editar');
+
+        $this->verComo($this->caudete, "/caudete-se-mueve/admin/pages/{$registro->slug}/edit")
+            ->assertNotFound();
+    }
+
+    public function test_pages_list_shows_all_site_records_and_only_toggles_publication(): void
+    {
+        $this->activar('caudete-se-mueve');
+        $visible = Page::create([
+            'title' => 'Página visible de Caudete',
+            'slug' => 'pagina-visible',
+            'is_published' => true,
+            'published_at' => now()->subDay(),
+        ]);
+        $hidden = Page::create([
+            'title' => 'Política de privacidad',
+            'slug' => 'privacidad',
+            'is_published' => false,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->activar('miradas-violetas');
+        $otherSite = Page::create([
+            'title' => 'Página de Miradas',
+            'slug' => 'pagina-de-miradas',
+            'is_published' => true,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->verComo($this->caudete, '/caudete-se-mueve/admin/pages')
+            ->assertOk()
+            ->assertSee('Página visible de Caudete')
+            ->assertSee('Política de privacidad')
+            ->assertDontSee('Página de Miradas')
+            ->assertDontSee('Crear')
+            ->assertDontSee('Editar')
+            ->assertDontSee('Eliminar');
+
+        Filament::setCurrentPanel(Filament::getPanel('caudete-se-mueve'));
+
+        $listing = Livewire::test(ListPages::class)
+            ->assertCanSeeTableRecords([$visible, $hidden])
+            ->assertTableActionHasLabel('toggleVisibility', 'Ocultar', $visible)
+            ->assertTableActionHasLabel('toggleVisibility', 'Publicar', $hidden)
+            ->assertTableActionDoesNotExist('edit', null, $visible)
+            ->assertTableActionDoesNotExist('delete', null, $visible)
+            ->callTableAction('toggleVisibility', $visible)
+            ->assertTableActionMounted('toggleVisibility')
+            ->callMountedTableAction();
+
+        $this->assertDatabaseHas('pages', [
+            'id' => $visible->id,
+            'site_id' => 'caudete-se-mueve',
+            'is_published' => false,
+        ]);
+        $this->get('http://caudete-se-mueve.test/'.$visible->slug)->assertNotFound();
+
+        $listing->callTableAction('toggleVisibility', $hidden);
+
+        $this->assertDatabaseHas('pages', [
+            'id' => $hidden->id,
+            'site_id' => 'caudete-se-mueve',
+            'is_published' => true,
+        ]);
+        $this->get('http://caudete-se-mueve.test/'.$hidden->slug)
+            ->assertOk()
+            ->assertSee('http://caudete-se-mueve.test/'.$hidden->slug);
+        $this->get('http://caudete-se-mueve.test/sitemap.xml')
+            ->assertOk()
+            ->assertSee('http://caudete-se-mueve.test/'.$hidden->slug);
+
+        $this->assertDatabaseHas('pages', [
+            'id' => $otherSite->id,
+            'site_id' => 'miradas-violetas',
+            'is_published' => true,
+        ]);
     }
 
     public function test_content_created_from_a_panel_belongs_to_that_site(): void

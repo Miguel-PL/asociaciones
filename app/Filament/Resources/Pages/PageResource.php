@@ -2,26 +2,14 @@
 
 namespace App\Filament\Resources\Pages;
 
-use App\Filament\Resources\Pages\Pages\CreatePage;
-use App\Filament\Resources\Pages\Pages\EditPage;
 use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Models\Page;
+use App\Sites\SiteManager;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -39,65 +27,43 @@ class PageResource extends Resource
 
     protected static ?string $pluralModelLabel = 'páginas';
 
-    public static function form(Schema $schema): Schema
-    {
-        return $schema->components([
-            Section::make('Contenido')->schema([
-                TextInput::make('title')
-                    ->label('Título')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->label('Slug')
-                    ->maxLength(255)
-                    ->helperText('Vacío = se genera a partir del título.'),
-                RichEditor::make('body')
-                    ->label('Contenido')
-                    ->columnSpanFull(),
-                TextInput::make('meta_description')
-                    ->label('Meta descripción')
-                    ->maxLength(500)
-                    ->columnSpanFull(),
-            ])->columns(1),
-
-            Section::make('Publicación')->schema([
-                Toggle::make('is_published')
-                    ->label('Publicada')
-                    ->helperText('Desactiva para dejar la página como borrador.'),
-                DateTimePicker::make('published_at')
-                    ->label('Fecha de publicación')
-                    ->seconds(false)
-                    ->default(now()),
-            ])->columns(2),
-        ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('title')->label('Título')->searchable()->sortable()->wrap(),
-                TextColumn::make('slug')->label('Slug')->searchable()->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_published')->label('Publicada')->boolean(),
-                TextColumn::make('published_at')->label('Publicada el')->dateTime()->sortable(),
-                TextColumn::make('updated_at')->label('Actualizada')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('slug')->label('Slug')->searchable(),
+                TextColumn::make('is_published')
+                    ->label('Estado')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Publicada' : 'Oculta')
+                    ->badge()
+                    ->color(fn (Page $record): string => $record->is_published ? 'success' : 'gray'),
             ])
             ->recordTitleAttribute('title')
-            ->filters([
-                SelectFilter::make('is_published')->label('Estado')->options([
-                    1 => 'Publicadas',
-                    0 => 'Borradores',
-                ]),
-                TernaryFilter::make('is_published')->label('Publicada'),
-            ])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                Action::make('toggleVisibility')
+                    ->label(fn (Page $record): string => $record->is_published ? 'Ocultar' : 'Publicar')
+                    ->icon(fn (Page $record): string => $record->is_published ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                    ->color(fn (Page $record): string => $record->is_published ? 'danger' : 'success')
+                    ->requiresConfirmation(fn (Page $record): bool => $record->is_published)
+                    ->modalHeading(fn (Page $record): string => $record->is_published ? 'Ocultar página' : 'Publicar página')
+                    ->modalDescription(fn (Page $record): string => $record->is_published
+                        ? 'La página dejará de estar disponible en la web pública.'
+                        : 'La página volverá a estar disponible en la web pública.')
+                    ->modalSubmitActionLabel(fn (Page $record): string => $record->is_published ? 'Ocultar' : 'Publicar')
+                    ->action(function (Page $record): void {
+                        $site = app(SiteManager::class)->current();
+
+                        abort_unless($site !== null && $record->site_id === $site->slug, 404);
+
+                        $record->is_published = ! $record->is_published;
+                        $record->save();
+
+                        Notification::make()
+                            ->title($record->is_published ? 'Página publicada' : 'Página ocultada')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->defaultSort('title');
     }
@@ -106,8 +72,6 @@ class PageResource extends Resource
     {
         return [
             'index' => ListPages::route('/'),
-            'create' => CreatePage::route('/create'),
-            'edit' => EditPage::route('/{record}/edit'),
         ];
     }
 }

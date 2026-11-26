@@ -28,13 +28,18 @@ abstract class SiteController extends Controller
     protected function viewData(Site $site, array $extra = []): array
     {
         $settings = SiteSetting::forSite($site);
+        $publishedPages = Page::query()
+            ->published()
+            ->where('site_id', $site->slug)
+            ->get();
 
         return [
             'site' => $site,
-            'navPages' => $this->navPages(),
+            'pageLinks' => $publishedPages->keyBy('slug'),
+            'navPages' => $this->navPages($site, $publishedPages),
             'footerContact' => $settings->footerContact(),
             'socialLinks' => $settings->socialLinks(),
-            'legalLinks' => $this->legalLinks($site),
+            'legalLinks' => $this->legalLinks($site, $publishedPages),
             ...$extra,
         ];
     }
@@ -56,17 +61,14 @@ abstract class SiteController extends Controller
      *
      * @return Collection<int, Page>
      */
-    protected function navPages(): Collection
+    protected function navPages(Site $site, Collection $publishedPages): Collection
     {
-        $site = app(SiteManager::class)->current();
-        $configuredOrder = $site?->nav ?? [];
-        $footerSlugs = array_values($site?->footer ?? []);
+        $configuredOrder = $site->nav;
+        $footerSlugs = array_values($site->footer);
 
-        return Page::query()
-            ->published()
+        return $publishedPages
             // Los enlaces legales ya aparecen en el pie, no repetirlos arriba.
             ->whereNotIn('slug', $footerSlugs)
-            ->get()
             // Mantener primero el orden configurado y añadir páginas nuevas
             // después, ordenadas por título.
             ->sort(function (Page $left, Page $right) use ($configuredOrder): int {
@@ -95,7 +97,7 @@ abstract class SiteController extends Controller
      *
      * @return array<string, string>
      */
-    protected function legalLinks(Site $site): array
+    protected function legalLinks(Site $site, Collection $publishedPages): array
     {
         $labels = [
             'board' => 'Junta directiva',
@@ -104,10 +106,8 @@ abstract class SiteController extends Controller
             'cookies' => 'Cookies',
         ];
 
-        $pages = Page::query()
-            ->published()
+        $pages = $publishedPages
             ->whereIn('slug', array_values($site->footer))
-            ->get()
             ->keyBy('slug');
 
         $links = [];

@@ -10,8 +10,12 @@
             <h1 id="home-title">Una comunidad<br>que <em>se mueve</em>.</h1>
             <p class="home-hero-description">Caudete Se Mueve es un colectivo vecinal que transforma la solidaridad de nuestro municipio en acción. Trabajamos por los Derechos Humanos, la justicia social y el apoyo a las personas en situación de vulnerabilidad, aquí y más allá de nuestras fronteras.</p>
             <div class="home-hero-actions">
-                <a class="button button-dark" href="{{ route('pages.show', ['page' => 'que-hacemos']) }}">Qué hacemos</a>
-                <a class="button home-button-secondary" href="{{ route('pages.show', ['page' => 'quienes-somos']) }}">Quiénes somos</a>
+                @if ($page = $pageLinks->get('que-hacemos'))
+                    <a class="button button-dark" href="{{ route('pages.show', $page) }}">Qué hacemos</a>
+                @endif
+                @if ($page = $pageLinks->get('quienes-somos'))
+                    <a class="button home-button-secondary" href="{{ route('pages.show', $page) }}">Quiénes somos</a>
+                @endif
             </div>
         </div>
         <figure class="home-hero-art">
@@ -44,6 +48,10 @@
     <section class="participation-band home-participation" aria-labelledby="home-participation-title">
         <div class="participation-symbol" aria-hidden="true">✳</div>
         <div><p class="eyebrow">Las cosas cambian cuando nos implicamos</p><h2 id="home-participation-title">La solidaridad se construye entre todos.</h2></div>
-        <div class="participation-action"><p>Cada gesto cuenta. Súmate a nuestra comunidad y ayúdanos a transformar la solidaridad en acción.</p><a class="button button-light" href="{{ route('pages.show', ['page' => 'colabora']) }}">Quiero colaborar</a></div>
+        <div class="participation-action"><p>Cada gesto cuenta. Súmate a nuestra comunidad y ayúdanos a transformar la solidaridad en acción.</p>
+            @if ($page = $pageLinks->get('colabora'))
+                <a class="button button-light" href="{{ route('pages.show', $page) }}">Quiero colaborar</a>
+            @endif
+        </div>
     </section>
 @endsection

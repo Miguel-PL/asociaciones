@@ -111,6 +111,10 @@
                     <a href="{{ route('pages.show', $page) }}"
                        @class(['is-active' => request()->routeIs('pages.show', $page)])>{{ $page->title }}</a>
                 @endforeach
+                @if (! $navPages->contains('slug', 'colabora'))
+                    <a href="{{ route('posts.index') }}"
+                       @class(['is-active' => request()->routeIs('posts.*')])>Noticias</a>
+                @endif
             @else
                 <a href="{{ route('posts.index') }}"
                    @class(['is-active' => request()->routeIs('posts.*')])>Noticias</a>
